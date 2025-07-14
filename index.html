@@ -6,45 +6,57 @@
     <title>Eksplorator Struktur Holding BUMN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
-        .content-card { transition: all 0.3s ease-in-out; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif;}
+        body { background: linear-gradient(135deg,#dbeafe 0%, #f0fdfa 100%)!important;}
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin: auto; height: 350px; max-height: 400px; }
         .subsidiary-list { display: none; }
-        .group-item-enter { animation: fadeIn 0.6s ease-out forwards; opacity: 0; transform: translateY(10px); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .rotate-180 { transform: rotate(180deg);}
+        .sidebar-gradient { background: linear-gradient(160deg,#1e3a8a 75%,#60a5fa 100%);}
+        .sidebar-item-active { background: #2563eb; color: #fff !important; font-weight: 700; box-shadow: 0 6px 16px -8px #3b82f6; }
+        .card-glass { background:rgba(255,255,255,0.7); backdrop-filter: blur(8px);}
+        .homebtn { transition: .15s;}
+        .homebtn:hover { background: #dbeafe; color: #1d4ed8;}
+        .group-item-enter { animation: fadeIn 0.5s cubic-bezier(.32,2,.55,.27) forwards; opacity:0; transform:translateY(12px);}
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width:8px;}
+        ::-webkit-scrollbar-thumb { background:#dbeafe; border-radius:16px;}
+        ::-webkit-scrollbar-thumb:hover { background:#60a5fa;}
+        ::selection { background: #bfdbfe; color: #1e293b;}
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800">
+<body class="text-slate-800">
 
 <div class="flex flex-col md:flex-row min-h-screen">
-    <aside id="sidebar" class="w-full md:w-72 bg-white border-r border-slate-200 p-4 md:p-6 md:fixed md:h-full flex-shrink-0 rounded-b-2xl md:rounded-r-3xl md:rounded-bl-none shadow-lg">
-        <div class="flex items-center gap-3 mb-6">
-            <div class="bg-blue-600 text-white p-3 rounded-xl shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-gradient w-full md:w-72 md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 flex flex-col justify-between">
+        <div>
+            <div class="flex items-center gap-3 mb-8 p-6 pt-7">
+                <div class="bg-white/20 p-3 rounded-xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                </div>
+                <h1 class="text-2xl font-extrabold text-white tracking-wide">Holding BUMN</h1>
             </div>
-            <h1 class="text-2xl font-extrabold text-slate-900">Holding BUMN</h1>
+            <nav id="cluster-nav" class="mb-8 px-4">
+                <h2 class="text-sm font-bold text-blue-100 uppercase tracking-widest mb-4">Klaster Usaha</h2>
+                <ul class="space-y-1"></ul>
+            </nav>
         </div>
-        <nav id="cluster-nav">
-            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Klaster Usaha</h2>
-            <ul class="space-y-2"></ul>
-        </nav>
+        <footer class="p-4 pb-6 text-xs text-blue-100 text-center opacity-80 select-none">
+            © 2025 Eksplorator BUMN.<br>Dibuat dengan TailwindCSS & Chart.js
+        </footer>
     </aside>
 
-    <main class="flex-1 md:ml-72 p-6 sm:p-8 md:p-10">
-        <div id="main-content"></div>
+    <!-- Main content -->
+    <main class="flex-1 md:ml-72 p-4 sm:p-10 transition-all duration-300 min-h-screen flex items-center justify-center" style="background: none;">
+        <div id="main-content" class="w-full"></div>
     </main>
 </div>
 
 <script>
-// ==== DATA LENGKAP 11 KLASTER BUMN ====
+// --------- Data bumnData: sama dengan versi sebelumnya, lengkap 11 klaster ---------
 const bumnData = { "clusters": [
     // 1. Energi, Minyak dan Gas
     {
@@ -474,25 +486,32 @@ const bumnData = { "clusters": [
         ]
     }
 ]};
-// ==== END DATA ====
+// --------- END Data bumnData ---------
 
 const clusterNav = document.querySelector('#cluster-nav ul');
 const mainContent = document.getElementById('main-content');
 let activeClusterLink = null;
 let chartInstance = null;
 
+// Tampilan Welcome
 const createWelcomeMessage = () => `
-    <div class="text-center bg-white p-12 rounded-3xl shadow-xl border border-slate-200 group-item-enter">
+    <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
         <div class="flex justify-center mb-6">
-            <div class="bg-blue-100 text-blue-600 p-5 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+            <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
             </div>
         </div>
-        <h2 class="text-3xl font-extrabold mb-3 text-slate-900">Selamat Datang di Eksplorator BUMN</h2>
-        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Aplikasi ini memvisualisasikan struktur kompleks Holding BUMN di Indonesia. Pilih salah satu klaster usaha dari menu di samping untuk mulai menjelajahi perusahaan holding, anak perusahaan, dan entitas turunannya.</p>
+        <h2 class="text-3xl font-extrabold mb-3 text-blue-900 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
+        <p class="text-lg text-slate-700 max-w-xl mx-auto mb-1">Visualisasi interaktif struktur holding dan anak perusahaan BUMN Indonesia.</p>
+        <div class="mt-7 text-center">
+            <span class="inline-block px-5 py-3 rounded-xl bg-gradient-to-tr from-blue-200 to-blue-400/60 text-blue-900 text-lg font-semibold tracking-wider shadow-md animate-pulse">
+                Pilih klaster usaha dari menu di samping untuk mulai eksplorasi!
+            </span>
+        </div>
     </div>
 `;
 
+// Buat subsidiary HTML rekursif
 const createSubsidiaryHTML = (subsidiaries) => {
     if (!subsidiaries || subsidiaries.length === 0) return '';
     let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
@@ -515,6 +534,7 @@ const createSubsidiaryHTML = (subsidiaries) => {
     return html;
 };
 
+// Tampilkan klaster
 const displayCluster = (clusterName) => {
     const clusterData = bumnData.clusters.find(c => c.name === clusterName);
     if (!clusterData) {
@@ -524,52 +544,55 @@ const displayCluster = (clusterName) => {
 
     let contentHTML = `
         <div class="group-item-enter">
+            <button class="homebtn bg-blue-100/60 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
+                onclick="window.showHome()"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg> Beranda</button>
             <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
-            <p class="text-xl text-slate-600 mb-10">Berikut adalah pemetaan perusahaan holding di dalam klaster ${clusterData.name}. Klik pada setiap kartu untuk melihat struktur anak perusahaannya.</p>
+            <p class="text-xl text-slate-600 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
         </div>
     `;
-    
     if (clusterData.holdings && clusterData.holdings.length > 0) {
-        contentHTML += `
+         contentHTML += `
             <div class="mb-12 group-item-enter" style="animation-delay: 0.1s;">
-                <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-                    <h3 class="text-2xl font-bold text-slate-800 mb-6">Distribusi Anak Perusahaan per Holding</h3>
+               <div class="card-glass p-8 rounded-2xl shadow-xl border border-blue-200">
+                    <h3 class="text-2xl font-bold text-blue-700 mb-6">Distribusi Anak Perusahaan</h3>
                     <div class="chart-container">
                         <canvas id="clusterChart"></canvas>
                     </div>
-                </div>
+               </div>
             </div>
-        `;
+         `;
     }
 
     contentHTML += '<div class="space-y-8">';
     clusterData.holdings.forEach((holding, index) => {
         const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
         contentHTML += `
-            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden content-card group-item-enter" style="animation-delay: ${0.2 + index * 0.1}s;">
-                <button class="w-full text-left p-7 hover:bg-blue-50/20 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
+            <div class="card-glass rounded-2xl shadow-lg border border-blue-100 overflow-hidden content-card group-item-enter hover:scale-[1.025] hover:shadow-2xl transition-all duration-150" style="animation-delay: ${0.2 + index * 0.1}s;">
+                <button class="w-full text-left p-7 hover:bg-blue-50/40 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
                     <div>
-                        <h3 class="text-2xl font-semibold text-blue-700">${holding.name}</h3>
+                        <h3 class="text-2xl font-semibold text-blue-700 drop-shadow">${holding.name}</h3>
                         <p class="text-slate-600 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
                     </div>
-                    <svg class="w-7 h-7 text-slate-400 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                     <svg class="w-7 h-7 text-blue-300 group-hover:text-blue-500 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-slate-100">
-                    <div class="pt-5">
-                        ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
-                    </div>
+                <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-blue-50 bg-blue-50/20 rounded-b-2xl">
+                   <div class="pt-5">
+                    ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
+                   </div>
                 </div>
             </div>`;
     });
     contentHTML += '</div>';
 
     mainContent.innerHTML = contentHTML;
-
-    if (chartInstance) { chartInstance.destroy(); }
+    
+    // Chart
+    if (chartInstance) chartInstance.destroy();
     const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
     if (chartCtx) {
         const labels = clusterData.holdings.map(h => h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));
         const data = clusterData.holdings.map(h => h.subsidiaries ? h.subsidiaries.length : 0);
+
         chartInstance = new Chart(chartCtx, {
             type: 'bar',
             data: {
@@ -577,8 +600,8 @@ const displayCluster = (clusterName) => {
                 datasets: [{
                     label: 'Jumlah Anak Perusahaan',
                     data: data,
-                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59,130,246,0.85)',
+                    borderColor: 'rgba(59,130,246,1)',
                     borderWidth: 1,
                     borderRadius: 8,
                 }]
@@ -587,14 +610,10 @@ const displayCluster = (clusterName) => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+                    y: { beginAtZero: true, grid: { color: '#e0e7ef' } },
                     x: { 
                         grid: { display: false },
-                        ticks: {
-                            autoSkip: false,
-                            maxRotation: 45,
-                            minRotation: 45
-                        }
+                        ticks: { maxRotation: 45, minRotation: 45 }
                     }
                 },
                 plugins: {
@@ -613,51 +632,49 @@ const displayCluster = (clusterName) => {
     }
 };
 
+// Toggle accordion & animasi panah
 mainContent.addEventListener('click', (e) => {
     const button = e.target.closest('button[data-target]');
     if (button) {
         const targetId = button.getAttribute('data-target');
         const targetElement = document.getElementById(targetId);
         const icon = button.querySelector('svg');
-
         if (targetElement) {
             const isVisible = targetElement.style.display === 'block';
-            if (isVisible) {
-                targetElement.style.display = 'none';
-                icon.classList.remove('rotate-180');
-            } else {
-                targetElement.style.display = 'block';
-                icon.classList.add('rotate-180');
-            }
+            targetElement.style.display = isVisible ? 'none' : 'block';
+            icon.classList.toggle('rotate-180', !isVisible);
         }
     }
 });
 
+// Sidebar nav
 document.addEventListener('DOMContentLoaded', () => {
-    bumnData.clusters.forEach(cluster => {
+    bumnData.clusters.forEach((cluster, i) => {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = cluster.name;
-        a.className = 'flex items-center p-3 text-slate-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 font-medium';
+        a.className = 'flex items-center px-4 py-3 text-blue-50/90 rounded-xl hover:bg-blue-200/40 hover:text-blue-900 transition-colors font-medium sidebar-item';
         a.dataset.cluster = cluster.name;
-
         a.addEventListener('click', (e) => {
             e.preventDefault();
-
-            if (activeClusterLink) {
-                activeClusterLink.classList.remove('bg-blue-100', 'text-blue-800', 'font-semibold');
-            }
-            a.classList.add('bg-blue-100', 'text-blue-800', 'font-semibold');
+            if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
+            a.classList.add('sidebar-item-active');
             activeClusterLink = a;
-
             displayCluster(cluster.name);
         });
         li.appendChild(a);
         clusterNav.appendChild(li);
     });
-    mainContent.innerHTML = createWelcomeMessage();
+    showHome();
 });
+
+// Untuk global akses dari tombol "Beranda"
+window.showHome = function() {
+    mainContent.innerHTML = createWelcomeMessage();
+    if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
+    activeClusterLink = null;
+};
 </script>
 
 </body>
