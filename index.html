@@ -1,638 +1,622 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksplorator Struktur Holding BUMN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Serene Blue & Neutral Grays (Refined) -->
+    <!-- Application Structure Plan: Aplikasi ini menggunakan tata letak dua panel yang terinspirasi dari dasbor. Panel kiri (sidebar) berfungsi sebagai navigasi utama, mencantumkan semua 11 klaster BUMN. Ini memungkinkan pengguna untuk dengan cepat memilih area fokus. Panel kanan (konten utama) secara dinamis menampilkan informasi berdasarkan pilihan pengguna. Struktur ini menggunakan pendekatan "progressive disclosure": pengguna pertama-tama melihat gambaran umum klaster, kemudian dapat menggali lebih dalam ke masing-masing perusahaan holding, anak perusahaan, dan entitas turunannya dengan mengklik. Pendekatan ini dipilih untuk mengelola kompleksitas data hierarkis yang besar, mencegah pengguna kewalahan, dan menyediakan alur eksplorasi yang logis dan intuitif, dari gambaran umum ke detail spesifik. Desain telah dimodernisasi dengan sudut membulat yang lebih menonjol, bayangan yang lebih dalam, dan skema warna yang lebih kaya namun tetap menenangkan, serta animasi masuk untuk elemen konten. -->
+    <!-- Visualization & Content Choices: Report Info: Struktur hierarki BUMN (klaster -> holding -> anak -> cucu). Goal: Mengatur & Membandingkan. Viz/Presentation Method: 1. Daftar Navigasi (HTML/JS) untuk pemilihan klaster. 2. Kartu Interaktif yang dapat diperluas (HTML/CSS/JS) untuk setiap perusahaan holding dengan efek hover dan transisi yang halus. 3. Daftar Bertingkat (HTML/CSS) untuk menampilkan hierarki anak/cucu perusahaan dengan penanda visual yang jelas. 4. Bagan Batang (Chart.js/Canvas) untuk membandingkan jumlah anak perusahaan di seluruh holding dalam sebuah klaster, dengan gaya yang diperbarui. Interaction: Klik pada klaster untuk memuat data dengan animasi. Klik pada kartu holding untuk menampilkan/menyembunyikan detail anak perusahaan dengan transisi. Hover pada bagan untuk melihat tooltip. Justification: Kombinasi ini menyajikan data tekstual yang padat dalam format terstruktur yang mudah dinavigasi, sementara bagan batang memberikan ringkasan visual kuantitatif yang cepat. Progressive disclosure melalui klik mencegah kelebihan informasi. Estetika modern dan interaksi yang lebih halus meningkatkan keterlibatan pengguna dan membuat eksplorasi data yang kompleks menjadi lebih menyenangkan. Library/Method: TailwindCSS untuk tata letak dan styling, Chart.js untuk visualisasi data. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        .content-card { transition: all 0.3s ease-in-out; }
+        .subsidiary-list { display: none; }
+        .group-item-enter { animation: fadeIn 0.6s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="id"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Eksplorator Struktur Holding BUMN&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Chosen Palette: Serene Blue &amp; Neutral Grays (Refined) --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Application Structure Plan: Aplikasi ini menggunakan tata letak dua panel yang terinspirasi dari dasbor. Panel kiri (sidebar) berfungsi sebagai navigasi utama, mencantumkan semua 11 klaster BUMN. Ini memungkinkan pengguna untuk dengan cepat memilih area fokus. Panel kanan (konten utama) secara dinamis menampilkan informasi berdasarkan pilihan pengguna. Struktur ini menggunakan pendekatan "progressive disclosure": pengguna pertama-tama melihat gambaran umum klaster, kemudian dapat menggali lebih dalam ke masing-masing perusahaan holding, anak perusahaan, dan entitas turunannya dengan mengklik. Pendekatan ini dipilih untuk mengelola kompleksitas data hierarkis yang besar, mencegah pengguna kewalahan, dan menyediakan alur eksplorasi yang logis dan intuitif, dari gambaran umum ke detail spesifik. Desain telah dimodernisasi dengan sudut membulat yang lebih menonjol, bayangan yang lebih dalam, dan skema warna yang lebih kaya namun tetap menenangkan, serta animasi masuk untuk elemen konten. --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Visualization &amp; Content Choices: Report Info: Struktur hierarki BUMN (klaster -&gt; holding -&gt; anak -&gt; cucu). Goal: Mengatur &amp; Membandingkan. Viz/Presentation Method: 1. Daftar Navigasi (HTML/JS) untuk pemilihan klaster. 2. Kartu Interaktif yang dapat diperluas (HTML/CSS/JS) untuk setiap perusahaan holding dengan efek hover dan transisi yang halus. 3. Daftar Bertingkat (HTML/CSS) untuk menampilkan hierarki anak/cucu perusahaan dengan penanda visual yang jelas. 4. Bagan Batang (Chart.js/Canvas) untuk membandingkan jumlah anak perusahaan di seluruh holding dalam sebuah klaster, dengan gaya yang diperbarui. Interaction: Klik pada klaster untuk memuat data dengan animasi. Klik pada kartu holding untuk menampilkan/menyembunyikan detail anak perusahaan dengan transisi. Hover pada bagan untuk melihat tooltip. Justification: Kombinasi ini menyajikan data tekstual yang padat dalam format terstruktur yang mudah dinavigasi, sementara bagan batang memberikan ringkasan visual kuantitatif yang cepat. Progressive disclosure melalui klik mencegah kelebihan informasi. Estetika modern dan interaksi yang lebih halus meningkatkan keterlibatan pengguna dan membuat eksplorasi data yang kompleks menjadi lebih menyenangkan. Library/Method: TailwindCSS untuk tata letak dan styling, Chart.js untuk visualisasi data. --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: 'Inter', sans-serif; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.content-card { transition: all 0.3s ease-in-out; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.subsidiary-list { display: none; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.group-item-enter { animation: fadeIn 0.6s ease-out forwards; opacity: 0; transform: translateY(10px); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar { width: 8px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-track { background: #f1f5f9; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-thumb:hover { background: #64748b; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body class="bg-slate-100 text-slate-800"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="flex flex-col md:flex-row min-h-screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;aside id="sidebar" class="w-full md:w-72 bg-white border-r border-slate-200 p-4 md:p-6 md:fixed md:h-full flex-shrink-0 rounded-b-2xl md:rounded-r-3xl md:rounded-bl-none shadow-lg"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flex items-center gap-3 mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-blue-600 text-white p-3 rounded-xl shadow-md"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 class="text-2xl font-extrabold text-slate-900"&gt;Holding BUMN&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;nav id="cluster-nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4"&gt;Klaster Usaha&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;ul class="space-y-2"&gt;&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/aside&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;main class="flex-1 md:ml-72 p-6 sm:p-8 md:p-10"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="main-content"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/main&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const bumnData = {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>"clusters": [</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Energi, Minyak dan Gas",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Pertamina (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Nusantara Regas" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PPT Energy Trading Co Ltd" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Training &amp; Consulting" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Hulu Energi (PHE)", "sub_subsidiaries": ["PT Elnusa Tbk", "PT Pertamina Drilling Services Indonesia (PDSI)", "PT Badak NGL", "65 anak perusahaan lainnya"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelita Air Service" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Pedeve Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Bina Medika" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Kilang Pertamina Internasional", "sub_subsidiaries": ["Pertamina Rosneft Pengolahan &amp; Petrokimia"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Tuban Petrochemical Industries" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina International Shipping" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi Tugu Pratama Indonesia Tbk" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Power Indonesia", "sub_subsidiaries": ["PT Industri Baterai Indonesia", { "name": "PT Pertamina Geothermal Energy (PGE)", "sub_subsidiaries": ["PT Geothermal Energi Seulawah", "PT Pertamina Geothermal Energy Kotamobagu"]}] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pertamina Patra Niaga", "sub_subsidiaries": ["Pertamina Retail", "Pertamina International M&amp;D", "Pertamina Petrochemical Trading", "Patra SK", { "name": "PT Pertamina Lubricants", "sub_subsidiaries": ["Anak perusahaan di Thailand", "PT Katalis Sinergi Indonesia (patungan)"] }, "Pertamina Patra Logistik", "Pertamina Maintenance &amp; Construction", "Pertamina International Timor"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Patra Jasa" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Perusahaan Gas Negara Tbk (PGN)", "sub_subsidiaries": ["Gagas Energi", "PGAS Solution", "PGAS Telekomunikasi Nusantara", "Nusantara Regas", "Transportasi Gas Negara"] }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Perusahaan Listrik Negara (Persero) (PLN)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Prima Layanan Nasional Enjiniring (PLN Enjiniring)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Indonesia Power" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Nusantara Power", "sub_subsidiaries": [{ "name": "PT PLN Nusantara Power Construction (PLN NPC)", "sub_subsidiaries": ["PT Prima Power Nusantara"]}] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Batam" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Tarakan" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Energi Primer Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Haleyora Power", "sub_subsidiaries": ["PT Haleyora Powerindo (HPI)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "Majapahit Holding BV" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Mandau Cipta Tenaga Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN ICON Plus" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelayaran Bahtera Adhiguna" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PLN Batu Bara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pengembangan Listrik Nasional Geothermal" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Kesehatan",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Bio Farma (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Kimia Farma Tbk", "sub_subsidiaries": ["Kimia Farma Apotek", "Phapros", "Sinkona Indonesia Lestari", "Kimia Farma Trading &amp; Distribution", "Kimia Farma Sungwun Pharmacopia", "Kimia Farma Dawaa Co., Ltd."] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "Indofarma" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "INUKI" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Manufaktur",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Biro Klasifikasi Indonesia (Persero) (ID Survey)", "subsidiaries": [{ "name": "PT Sucofindo" }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Len Industri (Persero) (DEFEND ID)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PAL Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Surya Energi Indotama" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Eltran Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Dahana" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Dirgantara Indonesia", "sub_subsidiaries": ["IPTN North America, Inc.", "PT General Electric Nusantara Turbine Services (GENTS)", "PT General Electric Technology Indonesia (GETI)", "PT Nusantara Turbin dan Propulsi"] }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Krakatau Steel (Persero) Tbk",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Meratus Jaya Iron Steel" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Krakatau Engineering" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Krakatau Baja Konstruksi" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Krakatau Sarana Infrastruktur" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Mineral Industri Indonesia (Persero) (MIND ID)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Indonesia Asahan Aluminium (Inalum)", "sub_subsidiaries": ["PT Indonesia Aluminium Alloy", "PT Borneo Alumina Indonesia", "PT Industri Baterai Indonesia", "PT Sarana Multi Logam Indonesia (SMLI)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "MIND ID Trading Pte Ltd" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT TIMAH Tbk", "sub_subsidiaries": ["Perbengkelan &amp; galangan kapal", "Jasa rekayasa teknik", "Penambangan timah", "Konsultasi &amp; penelitian", "Penambangan non-timah"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bukit Asam Tbk (PTBA)", "sub_subsidiaries": ["PT Batubara Bukit Kendi", "PT Bukit Asam Banko", "PT Bukit Asam Metana Enim", "PT Bukit Asam Metana Ombilin", "PT Bukit Asam Prima", "PT Bukit Energi Investama", "PT Bukit Multi Investama", "PT Internasional Prima Coal"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Aneka Tambang Tbk (ANTM)", "sub_subsidiaries": ["PT Indonesia Chemical Alumina", "PT Cibaliung Sumberdaya", "PT Mega Citra Utama", "PT Antam Resourcindo", "Asia Pacific Nickel", "PT Jatim Arindo Persada"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Freeport Indonesia" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Pangan dan Pupuk",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Pupuk Indonesia (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pupuk Sriwidjaja Palembang" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pupuk Kalimantan Timur", "sub_subsidiaries": ["PT Kaltim Industrial Estate (KIE)", "PT Kaltim Pasifik Amoniak (KPA)", "Kalianusa (patungan)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Petrokimia Gresik", "sub_subsidiaries": ["PT Petrokimia Kayaku", "PT Petrosida Gresik", "PT Petro Jordan Abadi (50%)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Rekayasa Industri" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pupuk Indonesia Niaga", "sub_subsidiaries": ["PT Sigma Utama"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pupuk Iskandar Muda" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pupuk Kujang Cikampek" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "Perum BULOG", "subsidiaries": [{ "name": "PT Mitra Bumdes Nusantara", "sub_subsidiaries": ["PT Jasa Prima Logistik BULOG (PT JPLB)", "PT Gendis Multi Manis"] }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Rajawali Nusantara Indonesia (Persero) (ID Food)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Mitra Kerinci" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT GIEB Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Perkebunan Mitra Ogan" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PG Candi Baru" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Laras Astra Kartika" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Berdikari" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Garam" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Perkebunan dan Kehutanan",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Perkebunan Nusantara III (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{"name": "PTPN I, II, IV-XIV (13 PTPN)"},</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Kawasan Industri Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Riset Perkebunan Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sri Pamela Medika Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Industri Nabati Lestari" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT LPP Agro Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sinergi Gula Nusantara", "sub_subsidiaries": ["Mengelola 36 pabrik gula"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Japan Indonesia China Wood" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Kharisma Pemasaran Bersama Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Industri Karet Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT ESW Nusa Tiga" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bio Industri Nusantara (BIONUSA)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sarana Agro Nusatara (SAN)" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "Perum Perhutani",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Inhutani I, II, III, IV, V" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BUMN Hijau Lestari I" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Palawi Risorsis" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Asuransi dan Dana Pensiun",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Bahana Pembinaan Usaha Indonesia (Persero) (IFG)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi Kredit Indonesia (Askrindo)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi Kerugian Jasa Raharja", "sub_subsidiaries": ["PT Jasaraharja Putera (JRP INSURANCE)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi Jasa Indonesia (Jasindo)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jaminan Kredit Indonesia (Jamkrindo)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Grahaniaga Tatautama", "sub_subsidiaries": ["PT Griyacanggu Tatautama (Hotel/Condotel Bali)", "PT Nusa Sarana Pradipta (Financial Club Jakarta)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi Jiwa IFG (IFG Life)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bahana Sekuritas" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bahana TCW Investment Management" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bahana Artha Ventura" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bahana Kapital Investa" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Reasuransi Indonesia Utama (Persero)", "subsidiaries": [{ "name": "PT Asuransi ASEI Indonesia" }] }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Infrastruktur",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Semen Indonesia (Persero) Tbk (SIG)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Padang" }, { "name": "PT Semen Tonasa" }, { "name": "Thang Long Cement JSC (TLCC)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Indonesia Industri Bangunan" }, { "name": "PT Semen Indonesia Aceh" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Indonesia Logistik" }, { "name": "PT Sinergi Informatika Semen Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Indonesia International" }, { "name": "PT Industri Kemasan Semen Gresik" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Kawasan Industri Gresik" }, { "name": "PT Semen Gresik and subsidiary" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Indonesia Beton and subsidiary" }, { "name": "PT Semen Kupang Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sinergi Mitra Investama" }, { "name": "PT United Tractors Semen Gresik" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Semen Baturaja (Persero) Tbk" }, { "name": "PT Solusi Bangun Indonesia Tbk" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Jasa Marga (Persero) Tbk",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Manado Bitung" }, { "name": "PT Marga Trans Nusantara" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jalantol Lingkarluar Jakarta" }, { "name": "PT Marga Sarana Jabar" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Marga Lingkar Jakarta" }, { "name": "PT Jasamarga Related Business" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Cinere Serpong Jaya" }, { "name": "PT Jasamarga Balikpapan Samarinda" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Transjawa Tol" }, { "name": "PT Jasamarga Japek Selatan" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Probolinggo Banyuwangi" }, { "name": "PT Jasamarga Gedebage Cilacap" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Jogja Bawen" }, { "name": "PT Jasamarga Gempol Pasuruan" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Kualanamu Tol" }, { "name": "PT Jasamarga Bali Tol" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jasamarga Tollroad Maintenance" }, { "name": "PT Jasamarga Tollroad Operator" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Wijaya Karya (Persero) Tbk (Wika)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT WIKA Tirta Jaya Jatiluhur" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Wijaya Karya Beton", "sub_subsidiaries": ["PT Wijaya Karya Komponen Beton", "PT Wijaya Karya Krakatau Beton", "PT Citra Lautan Teduh", "PT Wijaya Karya Pracetak Gedung"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Wijaya Karya Realty" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Pembangunan Perumahan (Persero) Tbk (PP)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PP Properti Tbk" }, { "name": "PT PP Urban" }, { "name": "PT PP Energi" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sinergi Colomadu" }, { "name": "PT Centurion Perkasa Iman" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PP Infrastruktur" }, { "name": "PT PP Presisi Tbk", "sub_subsidiaries": ["PT Lancarjaya Mandiri Abadi"] }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Waskita Karya (Persero) Tbk (Waskita)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Waskita Toll Road" }, { "name": "PT Waskita Beton Precast Tbk" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Waskita Karya Realty" }, { "name": "PT Waskita Karya Infrastruktur" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Adhi Karya (Persero) Tbk",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Dumai Tirta Persada" }, { "name": "PT Adhi Commuter Properti (ACP)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Adhi Persada Beton (APB)" }, { "name": "PT Adhi Persada Gedung (APG)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Adhi Persada Properti (APP)" }, { "name": "PT Adhi Jalintim Riau" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Jalintim Adhi Abipraya" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Hutama Karya (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT HaKaAston" }, { "name": "PT HK Realtindo" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "EPC Energy Singapore Pte. Ltd" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT HK Infrastruktur (HKI)", "sub_subsidiaries": ["PT Petronesia Benimel", "PT Bhirawa Steel", "PT Semen Indogreen Sentosa", "PT Hutama Mambelim Trans Papua", "PT Hutama Panorama Sitinjau Lauik"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Hutama Marga Waskita" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Brantas Abipraya (Persero)", "subsidiaries": [{ "name": "PT Brantas Energi" }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "Perum Perumnas", "subsidiaries": [{ "name": "PT Propernas Nusa Dua" }, { "name": "PT Propernas Griya Utama" }] }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Keuangan",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Bank Rakyat Indonesia (Persero) Tbk (BRI)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Permodalan Nasional Madani (PNM)", "sub_subsidiaries": ["PT Mitra Utama Madani (MUM)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BRI Agroniaga Tbk" }, { "name": "BRI Remittance Co. Ltd." },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Asuransi BRI Life" }, { "name": "PT BRI Multifinance Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BRI Ventura Investama" }, { "name": "PT BRI Asuransi Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bank Raya Indonesia Tbk" }, { "name": "PT Pegadaian", "sub_subsidiaries": ["PT POJ", "PT PIJ"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "BRI Danareksa Sekuritas" }, { "name": "Danareksa Investment Management" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Bank Negara Indonesia (Persero) Tbk (BNI)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BNI Sekuritas", "sub_subsidiaries": ["BNI Securities Pte. Ltd."] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BNI Life Insurance" }, { "name": "PT BNI Multifinance" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "BNI Remittance Ltd." }, { "name": "PT BANK HIBANK INDONESIA" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT BNI Modal Ventura" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Bank Mandiri (Persero) Tbk",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Mandiri Utama Finance" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Mandiri Capital Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Bank Syariah Indonesia Tbk (BSI)" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "Perum Percetakan Uang Republik Indonesia (Peruri)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Peruri Properti" }, { "name": "PT Kertas Padalarang" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Peruri Wira Timur" }, { "name": "PT Peruri Digital Security" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Cardsindo Tiga Perkasa (cucu)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sicpa Peruri Securink (afiliasi)" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Logistik",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Pelabuhan Indonesia (Pelindo)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelindo Terminal Petikemas (TPI) (Subholding)", "sub_subsidiaries": ["PT Prima Multi Terminal (55%)", "PT Jakarta International Container Terminal (JICT)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelindo Multi Terminal (Subholding)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Solusi Logistik (Subholding)", "sub_subsidiaries": ["PT Menara Maritim Indonesia", "PT Akses Pelabuhan Indonesia"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelindo Jasa Maritim (Subholding)", "sub_subsidiaries": ["PT LEGI"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Prima Husada Cipta Medan" }, { "name": "PT Integrasi Logistik Cipta Solusi" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pendidikan Maritim dan Logistik Indonesia" }, { "name": "PT Pelabuhan Indonesia Investama" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pelindo Husada Cipta Medan" }, { "name": "PT Electronic Data Interchange Indonesia" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Kereta Api Indonesia (Persero) (KAI)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Reska Multi Usaha" }, { "name": "PT KA Properti Manajemen" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT KA Pariwisata" }, { "name": "PT Railink" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pilar Sinergi BUMN Indonesia" }, { "name": "PT KAI Commuter Indonesia (KCI)" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Industri Kereta Api (Persero) (INKA)", "subsidiaries": [{ "name": "PT Reka Indo Global Jasa" }, { "name": "PT Inka Multi Solusi" }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Pelayaran Nasional Indonesia (Persero)", "subsidiaries": [{ "name": "PT Sarana Bandar Nasional" }, { "name": "PT PELITA INDONESIA DJAYA" }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT ASDP Indonesia Ferry (Persero)", "subsidiaries": [{ "name": "PT Indonesia Ferry Properti" }, { "name": "PT Jembatan Nusantara" }] }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Pariwisata dan Penerbangan",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Aviasi Pariwisata Indonesia (Persero) (InJourney)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Angkasa Pura Indonesia (InJourney Airports)", "sub_subsidiaries": ["PT Angkasa Pura Logistik", "PT Angkasa Pura Properti", "PT Angkasa Pura Suport", "PT Angkasa Pura Hotel", "PT Angkasa Pura Retail"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Integrasi Aviasi Solusi (InJourney Aviation Services)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Hotel Indonesia Natour", "sub_subsidiaries": ["PT Hotel Indonesia Properti (HIPRO)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sarinah" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Taman Wisata Candi Borobudur, Prambanan, dan Ratu Boko (TWC)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Pengembangan Pariwisata Indonesia (ITDC)", "sub_subsidiaries": ["ITDC Nusantara Utilities (INU)"] }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Garuda Indonesia (Persero)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Aero Wisata" }, { "name": "PT Sabre Travel Network Indonesia" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Garuda Maintenance Facility Aero Asia Tbk (GMFAA)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Aero Systems Indonesia (ASYST)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Citilink Indonesia" }, { "name": "PT Gapura Angkasa" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "Garuda Indonesia Holiday France" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"name": "Jasa Telekomunikasi dan Media",</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>"holdings": [</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"name": "PT Telekomunikasi Indonesia (Persero) Tbk (Telkom)",</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>"subsidiaries": [</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT PINS Indonesia" }, { "name": "PT Graha Sarana Duta" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Multimedia Nusantara (Metra)", "sub_subsidiaries": ["PT Administrasi Medika (AdMedika)", "PT Finnet Indonesia (Finnet)", "PT Nuon Digital Indonesia (Nuon)", {"name": "PT Infomedia Nusantara", "sub_subsidiaries": ["PT Infomedia Solusi Humanika", "PT Balebat Dedikasi Prima"]}] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Sigma Cipta Caraka (Telkomsigma)", "sub_subsidiaries": ["PT Sigma Solusi Integrasi", "PT Sigma Karya Sempurna", "PT Signet Pratama", "Sigma AIT Sdn., Bhd.", "PT Sigma Metrasys Solution", "PT Graha Telkomsigma"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Metra-Net" }, { "name": "PT Dayamitra Telekomunikasi Indonesia Tbk" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Telekomunikasi Indonesia International (Telin)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Napsindo Primatel International" }, { "name": "PT Telkom Akses" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Telekomunikasi Selular (Telkomsel)", "sub_subsidiaries": ["Telkomsel Finance B.V (TFBV)", "Telekomunikasi Seluler Finance Ltd. (TSFL)"] },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Telkom Satelit Indonesia (Telkomsat)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Telekomunikasi Infrastruktur Indonesia (TIF)" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>{ "name": "PT Telkom Data Ekosistem" }</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Produksi Film Negara (Persero)" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "Perum Lembaga Kantor Berita Nasional Antara (ANTARA)", "subsidiaries": [{ "name": "PT Antara Kencana Utama Estate Limited" }, { "name": "PT Antara Elektronik Transaksi Pratama" }] },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>{ "name": "PT Industri Telekomunikasi Indonesia (Persero) (INTI)", "subsidiaries": [{ "name": "PT Inti Pindad Mitra Sejati" }, { "name": "PT Inti Konten Indonesia" }] }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>]</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const clusterNav = document.querySelector('#cluster-nav ul');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const mainContent = document.getElementById('main-content');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let activeClusterLink = null;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let chartInstance = null;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const createWelcomeMessage = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return `</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="text-center bg-white p-12 rounded-3xl shadow-xl border border-slate-200 group-item-enter"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex justify-center mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="bg-blue-100 text-blue-600 p-5 rounded-full"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                           </span>&lt;svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-3xl font-extrabold mb-3 text-slate-900"&gt;Selamat Datang di Eksplorator BUMN&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-lg text-slate-600 max-w-2xl mx-auto"&gt;Aplikasi ini memvisualisasikan struktur kompleks Holding BUMN di Indonesia. Pilih salah satu klaster usaha dari menu di samping untuk mulai menjelajahi perusahaan holding, anak perusahaan, dan entitas turunannya.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const createSubsidiaryHTML = (subsidiaries) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!subsidiaries || subsidiaries.length === 0) return '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let html = '&lt;ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200"&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>subsidiaries.forEach(sub =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const hasSubSubs = sub.sub_subsidiaries &amp;&amp; sub.sub_subsidiaries.length &gt; 0;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>html += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li class="text-slate-700 relative"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                       </span>&lt;span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                       </span>&lt;div class="flex items-start gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-blue-600 mt-1"&gt;&amp;#8227;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="flex-1"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;span&gt;${typeof sub === 'string' ? sub : sub.name}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>${hasSubSubs ? createSubsidiaryHTML(sub.sub_subsidiaries) : ''}</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                       </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/li&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>html += '&lt;/ul&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return html;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const displayCluster = (clusterName) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const clusterData = bumnData.clusters.find(c =&gt; c.name === clusterName);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!clusterData) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>mainContent.innerHTML = createWelcomeMessage();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>let contentHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="group-item-enter"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-4xl font-extrabold text-blue-800 mb-3"&gt;${clusterData.name}&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xl text-slate-600 mb-10"&gt;Berikut adalah pemetaan perusahaan holding di dalam klaster ${clusterData.name}. Klik pada setiap kartu untuk melihat struktur anak perusahaannya.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (clusterData.holdings &amp;&amp; clusterData.holdings.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>contentHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mb-12 group-item-enter" style="animation-delay: 0.1s;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                       </span>&lt;div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h3 class="text-2xl font-bold text-slate-800 mb-6"&gt;Distribusi Anak Perusahaan per Holding&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="chart-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;canvas id="clusterChart"&gt;&lt;/canvas&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                       </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>contentHTML += '&lt;div class="space-y-8"&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>clusterData.holdings.forEach((holding, index) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const hasSubsidiaries = holding.subsidiaries &amp;&amp; holding.subsidiaries.length &gt; 0;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contentHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden content-card group-item-enter" style="animation-delay: ${0.2 + index * 0.1}s;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="w-full text-left p-7 hover:bg-blue-50/20 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;h3 class="text-2xl font-semibold text-blue-700"&gt;${holding.name}&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-slate-600 mt-2"&gt;${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                             </span>&lt;svg class="w-7 h-7 text-slate-400 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-slate-100"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                           </span>&lt;div class="pt-5"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '&lt;p class="text-slate-500"&gt;Informasi tidak tersedia.&lt;/p&gt;'}</p>
-<p class="p1"><span class="Apple-converted-space">                           </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>contentHTML += '&lt;/div&gt;';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>mainContent.innerHTML = contentHTML;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (chartInstance) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>chartInstance.destroy();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const chartCtx = document.getElementById('clusterChart')?.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (chartCtx) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const labels = clusterData.holdings.map(h =&gt; h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const data = clusterData.holdings.map(h =&gt; h.subsidiaries ? h.subsidiaries.length : 0);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>chartInstance = new Chart(chartCtx, {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>type: 'bar',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>data: {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>labels: labels,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>datasets: [{</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>label: 'Jumlah Anak Perusahaan',</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>data: data,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>backgroundColor: 'rgba(59, 130, 246, 0.8)', /* Deeper blue */</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>borderColor: 'rgba(59, 130, 246, 1)',</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>borderWidth: 1,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>borderRadius: 8, /* More rounded bars */</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}]</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>options: {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>responsive: true,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>maintainAspectRatio: false,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>scales: {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>y: { beginAtZero: true, grid: { color: '#e2e8f0' } },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>x: {<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                </span>grid: { display: false },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>ticks: {</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>autoSkip: false,</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>maxRotation: 45,</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>minRotation: 45,</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>callback: function(value, index, values) {</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>const label = this.getLabelForValue(value);</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>if (label.length &gt; 16) {</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>return label.split(' ').map((word, i) =&gt; i === 0 ? word : word); // Simple wrap attempt</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>return label;</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>plugins: {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>legend: { display: false },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>tooltip: {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>backgroundColor: '#1e293b',</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>titleFont: { size: 16, weight: 'bold' },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>bodyFont: { size: 14 },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>padding: 14,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>cornerRadius: 8,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>displayColors: false</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>mainContent.addEventListener('click', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const button = e.target.closest('button[data-target]');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (button) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const targetId = button.getAttribute('data-target');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const targetElement = document.getElementById(targetId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const icon = button.querySelector('svg');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (targetElement) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const isVisible = targetElement.style.display === 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (isVisible) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>targetElement.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>icon.classList.remove('rotate-180');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>targetElement.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>icon.classList.add('rotate-180');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>bumnData.clusters.forEach(cluster =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const li = document.createElement('li');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const a = document.createElement('a');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>a.href = '#';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>a.textContent = cluster.name;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>a.className = 'flex items-center p-3 text-slate-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 font-medium';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>a.dataset.cluster = cluster.name;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>a.addEventListener('click', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>e.preventDefault();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (activeClusterLink) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>activeClusterLink.classList.remove('bg-blue-100', 'text-blue-800', 'font-semibold');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>a.classList.add('bg-blue-100', 'text-blue-800', 'font-semibold');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>activeClusterLink = a;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>displayCluster(cluster.name);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>li.appendChild(a);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>clusterNav.appendChild(li);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>mainContent.innerHTML = createWelcomeMessage();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside id="sidebar" class="w-full md:w-72 bg-white border-r border-slate-200 p-4 md:p-6 md:fixed md:h-full flex-shrink-0 rounded-b-2xl md:rounded-r-3xl md:rounded-bl-none shadow-lg">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-blue-600 text-white p-3 rounded-xl shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-900">Holding BUMN</h1>
+            </div>
+            <nav id="cluster-nav">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Klaster Usaha</h2>
+                <ul class="space-y-2"></ul>
+            </nav>
+        </aside>
+
+        <main class="flex-1 md:ml-72 p-6 sm:p-8 md:p-10">
+            <div id="main-content">
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const bumnData = {
+            "clusters": [
+                {
+                    "name": "Energi, Minyak dan Gas",
+                    "holdings": [
+                        {
+                            "name": "PT Pertamina (Persero)",
+                            "subsidiaries": [
+                                { "name": "PT Nusantara Regas" },
+                                { "name": "PPT Energy Trading Co Ltd" },
+                                { "name": "PT Pertamina Training & Consulting" },
+                                { "name": "PT Pertamina Hulu Energi (PHE)", "sub_subsidiaries": ["PT Elnusa Tbk", "PT Pertamina Drilling Services Indonesia (PDSI)", "PT Badak NGL", "65 anak perusahaan lainnya"] },
+                                { "name": "PT Pelita Air Service" },
+                                { "name": "PT Pertamina Pedeve Indonesia" },
+                                { "name": "PT Pertamina Bina Medika" },
+                                { "name": "PT Kilang Pertamina Internasional", "sub_subsidiaries": ["Pertamina Rosneft Pengolahan & Petrokimia"] },
+                                { "name": "PT Tuban Petrochemical Industries" },
+                                { "name": "PT Pertamina International Shipping" },
+                                { "name": "PT Asuransi Tugu Pratama Indonesia Tbk" },
+                                { "name": "PT Pertamina Power Indonesia", "sub_subsidiaries": ["PT Industri Baterai Indonesia", { "name": "PT Pertamina Geothermal Energy (PGE)", "sub_subsidiaries": ["PT Geothermal Energi Seulawah", "PT Pertamina Geothermal Energy Kotamobagu"]}] },
+                                { "name": "PT Pertamina Patra Niaga", "sub_subsidiaries": ["Pertamina Retail", "Pertamina International M&D", "Pertamina Petrochemical Trading", "Patra SK", { "name": "PT Pertamina Lubricants", "sub_subsidiaries": ["Anak perusahaan di Thailand", "PT Katalis Sinergi Indonesia (patungan)"] }, "Pertamina Patra Logistik", "Pertamina Maintenance & Construction", "Pertamina International Timor"] },
+                                { "name": "PT Patra Jasa" },
+                                { "name": "PT Perusahaan Gas Negara Tbk (PGN)", "sub_subsidiaries": ["Gagas Energi", "PGAS Solution", "PGAS Telekomunikasi Nusantara", "Nusantara Regas", "Transportasi Gas Negara"] }
+                            ]
+                        },
+                        {
+                            "name": "PT Perusahaan Listrik Negara (Persero) (PLN)",
+                            "subsidiaries": [
+                                { "name": "PT Prima Layanan Nasional Enjiniring (PLN Enjiniring)" },
+                                { "name": "PT PLN Indonesia Power" },
+                                { "name": "PT PLN Nusantara Power", "sub_subsidiaries": [{ "name": "PT PLN Nusantara Power Construction (PLN NPC)", "sub_subsidiaries": ["PT Prima Power Nusantara"]}] },
+                                { "name": "PT PLN Batam" },
+                                { "name": "PT PLN Tarakan" },
+                                { "name": "PT PLN Energi Primer Indonesia" },
+                                { "name": "PT Haleyora Power", "sub_subsidiaries": ["PT Haleyora Powerindo (HPI)"] },
+                                { "name": "Majapahit Holding BV" },
+                                { "name": "PT Mandau Cipta Tenaga Nusantara" },
+                                { "name": "PT PLN ICON Plus" },
+                                { "name": "PT Pelayaran Bahtera Adhiguna" },
+                                { "name": "PT PLN Batu Bara" },
+                                { "name": "PT Pengembangan Listrik Nasional Geothermal" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Kesehatan",
+                    "holdings": [
+                        {
+                            "name": "PT Bio Farma (Persero)",
+                            "subsidiaries": [
+                                { "name": "PT Kimia Farma Tbk", "sub_subsidiaries": ["Kimia Farma Apotek", "Phapros", "Sinkona Indonesia Lestari", "Kimia Farma Trading & Distribution", "Kimia Farma Sungwun Pharmacopia", "Kimia Farma Dawaa Co., Ltd."] },
+                                { "name": "Indofarma" },
+                                { "name": "INUKI" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Manufaktur",
+                    "holdings": [
+                        { "name": "PT Biro Klasifikasi Indonesia (Persero) (ID Survey)", "subsidiaries": [{ "name": "PT Sucofindo" }] },
+                        {
+                            "name": "PT Len Industri (Persero) (DEFEND ID)",
+                            "subsidiaries": [
+                                { "name": "PT PAL Indonesia" },
+                                { "name": "PT Surya Energi Indotama" },
+                                { "name": "PT Eltran Indonesia" },
+                                { "name": "PT Dahana" },
+                                { "name": "PT Dirgantara Indonesia", "sub_subsidiaries": ["IPTN North America, Inc.", "PT General Electric Nusantara Turbine Services (GENTS)", "PT General Electric Technology Indonesia (GETI)", "PT Nusantara Turbin dan Propulsi"] }
+                            ]
+                        },
+                        {
+                            "name": "PT Krakatau Steel (Persero) Tbk",
+                            "subsidiaries": [
+                                { "name": "PT Meratus Jaya Iron Steel" },
+                                { "name": "PT Krakatau Engineering" },
+                                { "name": "PT Krakatau Baja Konstruksi" },
+                                { "name": "PT Krakatau Sarana Infrastruktur" }
+                            ]
+                        },
+                        {
+                            "name": "PT Mineral Industri Indonesia (Persero) (MIND ID)",
+                            "subsidiaries": [
+                                { "name": "PT Indonesia Asahan Aluminium (Inalum)", "sub_subsidiaries": ["PT Indonesia Aluminium Alloy", "PT Borneo Alumina Indonesia", "PT Industri Baterai Indonesia", "PT Sarana Multi Logam Indonesia (SMLI)"] },
+                                { "name": "MIND ID Trading Pte Ltd" },
+                                { "name": "PT TIMAH Tbk", "sub_subsidiaries": ["Perbengkelan & galangan kapal", "Jasa rekayasa teknik", "Penambangan timah", "Konsultasi & penelitian", "Penambangan non-timah"] },
+                                { "name": "PT Bukit Asam Tbk (PTBA)", "sub_subsidiaries": ["PT Batubara Bukit Kendi", "PT Bukit Asam Banko", "PT Bukit Asam Metana Enim", "PT Bukit Asam Metana Ombilin", "PT Bukit Asam Prima", "PT Bukit Energi Investama", "PT Bukit Multi Investama", "PT Internasional Prima Coal"] },
+                                { "name": "PT Aneka Tambang Tbk (ANTM)", "sub_subsidiaries": ["PT Indonesia Chemical Alumina", "PT Cibaliung Sumberdaya", "PT Mega Citra Utama", "PT Antam Resourcindo", "Asia Pacific Nickel", "PT Jatim Arindo Persada"] },
+                                { "name": "PT Freeport Indonesia" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Pangan dan Pupuk",
+                    "holdings": [
+                        {
+                            "name": "PT Pupuk Indonesia (Persero)",
+                            "subsidiaries": [
+                                { "name": "PT Pupuk Sriwidjaja Palembang" },
+                                { "name": "PT Pupuk Kalimantan Timur", "sub_subsidiaries": ["PT Kaltim Industrial Estate (KIE)", "PT Kaltim Pasifik Amoniak (KPA)", "Kalianusa (patungan)"] },
+                                { "name": "PT Petrokimia Gresik", "sub_subsidiaries": ["PT Petrokimia Kayaku", "PT Petrosida Gresik", "PT Petro Jordan Abadi (50%)"] },
+                                { "name": "PT Rekayasa Industri" },
+                                { "name": "PT Pupuk Indonesia Niaga", "sub_subsidiaries": ["PT Sigma Utama"] },
+                                { "name": "PT Pupuk Iskandar Muda" },
+                                { "name": "PT Pupuk Kujang Cikampek" }
+                            ]
+                        },
+                        { "name": "Perum BULOG", "subsidiaries": [{ "name": "PT Mitra Bumdes Nusantara", "sub_subsidiaries": ["PT Jasa Prima Logistik BULOG (PT JPLB)", "PT Gendis Multi Manis"] }] },
+                        {
+                            "name": "PT Rajawali Nusantara Indonesia (Persero) (ID Food)",
+                            "subsidiaries": [
+                                { "name": "PT Mitra Kerinci" },
+                                { "name": "PT GIEB Indonesia" },
+                                { "name": "PT Perkebunan Mitra Ogan" },
+                                { "name": "PT PG Candi Baru" },
+                                { "name": "PT Laras Astra Kartika" },
+                                { "name": "PT Berdikari" },
+                                { "name": "PT Garam" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Perkebunan dan Kehutanan",
+                    "holdings": [
+                        {
+                            "name": "PT Perkebunan Nusantara III (Persero)",
+                            "subsidiaries": [
+                                {"name": "PTPN I, II, IV-XIV (13 PTPN)"},
+                                { "name": "PT Kawasan Industri Nusantara" },
+                                { "name": "PT Riset Perkebunan Nusantara" },
+                                { "name": "PT Sri Pamela Medika Nusantara" },
+                                { "name": "PT Industri Nabati Lestari" },
+                                { "name": "PT LPP Agro Nusantara" },
+                                { "name": "PT Sinergi Gula Nusantara", "sub_subsidiaries": ["Mengelola 36 pabrik gula"] },
+                                { "name": "PT Japan Indonesia China Wood" },
+                                { "name": "PT Kharisma Pemasaran Bersama Nusantara" },
+                                { "name": "PT Industri Karet Nusantara" },
+                                { "name": "PT ESW Nusa Tiga" },
+                                { "name": "PT Bio Industri Nusantara (BIONUSA)" },
+                                { "name": "PT Sarana Agro Nusatara (SAN)" }
+                            ]
+                        },
+                        {
+                            "name": "Perum Perhutani",
+                            "subsidiaries": [
+                                { "name": "PT Inhutani I, II, III, IV, V" },
+                                { "name": "PT BUMN Hijau Lestari I" },
+                                { "name": "PT Palawi Risorsis" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Jasa Asuransi dan Dana Pensiun",
+                    "holdings": [
+                        {
+                            "name": "PT Bahana Pembinaan Usaha Indonesia (Persero) (IFG)",
+                            "subsidiaries": [
+                                { "name": "PT Asuransi Kredit Indonesia (Askrindo)" },
+                                { "name": "PT Asuransi Kerugian Jasa Raharja", "sub_subsidiaries": ["PT Jasaraharja Putera (JRP INSURANCE)"] },
+                                { "name": "PT Asuransi Jasa Indonesia (Jasindo)" },
+                                { "name": "PT Jaminan Kredit Indonesia (Jamkrindo)" },
+                                { "name": "PT Grahaniaga Tatautama", "sub_subsidiaries": ["PT Griyacanggu Tatautama (Hotel/Condotel Bali)", "PT Nusa Sarana Pradipta (Financial Club Jakarta)"] },
+                                { "name": "PT Asuransi Jiwa IFG (IFG Life)" },
+                                { "name": "PT Bahana Sekuritas" },
+                                { "name": "PT Bahana TCW Investment Management" },
+                                { "name": "PT Bahana Artha Ventura" },
+                                { "name": "PT Bahana Kapital Investa" }
+                            ]
+                        },
+                        { "name": "PT Reasuransi Indonesia Utama (Persero)", "subsidiaries": [{ "name": "PT Asuransi ASEI Indonesia" }] }
+                    ]
+                },
+                {
+                    "name": "Jasa Infrastruktur",
+                    "holdings": [
+                        {
+                            "name": "PT Semen Indonesia (Persero) Tbk (SIG)",
+                            "subsidiaries": [
+                                { "name": "PT Semen Padang" }, { "name": "PT Semen Tonasa" }, { "name": "Thang Long Cement JSC (TLCC)" },
+                                { "name": "PT Semen Indonesia Industri Bangunan" }, { "name": "PT Semen Indonesia Aceh" },
+                                { "name": "PT Semen Indonesia Logistik" }, { "name": "PT Sinergi Informatika Semen Indonesia" },
+                                { "name": "PT Semen Indonesia International" }, { "name": "PT Industri Kemasan Semen Gresik" },
+                                { "name": "PT Kawasan Industri Gresik" }, { "name": "PT Semen Gresik and subsidiary" },
+                                { "name": "PT Semen Indonesia Beton and subsidiary" }, { "name": "PT Semen Kupang Indonesia" },
+                                { "name": "PT Sinergi Mitra Investama" }, { "name": "PT United Tractors Semen Gresik" },
+                                { "name": "PT Semen Baturaja (Persero) Tbk" }, { "name": "PT Solusi Bangun Indonesia Tbk" }
+                            ]
+                        },
+                        {
+                            "name": "PT Jasa Marga (Persero) Tbk",
+                            "subsidiaries": [
+                                { "name": "PT Jasamarga Manado Bitung" }, { "name": "PT Marga Trans Nusantara" },
+                                { "name": "PT Jalantol Lingkarluar Jakarta" }, { "name": "PT Marga Sarana Jabar" },
+                                { "name": "PT Marga Lingkar Jakarta" }, { "name": "PT Jasamarga Related Business" },
+                                { "name": "PT Cinere Serpong Jaya" }, { "name": "PT Jasamarga Balikpapan Samarinda" },
+                                { "name": "PT Jasamarga Transjawa Tol" }, { "name": "PT Jasamarga Japek Selatan" },
+                                { "name": "PT Jasamarga Probolinggo Banyuwangi" }, { "name": "PT Jasamarga Gedebage Cilacap" },
+                                { "name": "PT Jasamarga Jogja Bawen" }, { "name": "PT Jasamarga Gempol Pasuruan" },
+                                { "name": "PT Jasamarga Kualanamu Tol" }, { "name": "PT Jasamarga Bali Tol" },
+                                { "name": "PT Jasamarga Tollroad Maintenance" }, { "name": "PT Jasamarga Tollroad Operator" }
+                            ]
+                        },
+                        {
+                            "name": "PT Wijaya Karya (Persero) Tbk (Wika)",
+                            "subsidiaries": [
+                                { "name": "PT WIKA Tirta Jaya Jatiluhur" },
+                                { "name": "PT Wijaya Karya Beton", "sub_subsidiaries": ["PT Wijaya Karya Komponen Beton", "PT Wijaya Karya Krakatau Beton", "PT Citra Lautan Teduh", "PT Wijaya Karya Pracetak Gedung"] },
+                                { "name": "PT Wijaya Karya Realty" }
+                            ]
+                        },
+                        {
+                            "name": "PT Pembangunan Perumahan (Persero) Tbk (PP)",
+                            "subsidiaries": [
+                                { "name": "PT PP Properti Tbk" }, { "name": "PT PP Urban" }, { "name": "PT PP Energi" },
+                                { "name": "PT Sinergi Colomadu" }, { "name": "PT Centurion Perkasa Iman" },
+                                { "name": "PT PP Infrastruktur" }, { "name": "PT PP Presisi Tbk", "sub_subsidiaries": ["PT Lancarjaya Mandiri Abadi"] }
+                            ]
+                        },
+                        {
+                            "name": "PT Waskita Karya (Persero) Tbk (Waskita)",
+                            "subsidiaries": [
+                                { "name": "PT Waskita Toll Road" }, { "name": "PT Waskita Beton Precast Tbk" },
+                                { "name": "PT Waskita Karya Realty" }, { "name": "PT Waskita Karya Infrastruktur" }
+                            ]
+                        },
+                        {
+                            "name": "PT Adhi Karya (Persero) Tbk",
+                            "subsidiaries": [
+                                { "name": "PT Dumai Tirta Persada" }, { "name": "PT Adhi Commuter Properti (ACP)" },
+                                { "name": "PT Adhi Persada Beton (APB)" }, { "name": "PT Adhi Persada Gedung (APG)" },
+                                { "name": "PT Adhi Persada Properti (APP)" }, { "name": "PT Adhi Jalintim Riau" },
+                                { "name": "PT Jalintim Adhi Abipraya" }
+                            ]
+                        },
+                        {
+                            "name": "PT Hutama Karya (Persero)",
+                            "subsidiaries": [
+                                { "name": "PT HaKaAston" }, { "name": "PT HK Realtindo" },
+                                { "name": "EPC Energy Singapore Pte. Ltd" },
+                                { "name": "PT HK Infrastruktur (HKI)", "sub_subsidiaries": ["PT Petronesia Benimel", "PT Bhirawa Steel", "PT Semen Indogreen Sentosa", "PT Hutama Mambelim Trans Papua", "PT Hutama Panorama Sitinjau Lauik"] },
+                                { "name": "PT Hutama Marga Waskita" }
+                            ]
+                        },
+                        { "name": "PT Brantas Abipraya (Persero)", "subsidiaries": [{ "name": "PT Brantas Energi" }] },
+                        { "name": "Perum Perumnas", "subsidiaries": [{ "name": "PT Propernas Nusa Dua" }, { "name": "PT Propernas Griya Utama" }] }
+                    ]
+                },
+                {
+                    "name": "Jasa Keuangan",
+                    "holdings": [
+                        {
+                            "name": "PT Bank Rakyat Indonesia (Persero) Tbk (BRI)",
+                            "subsidiaries": [
+                                { "name": "PT Permodalan Nasional Madani (PNM)", "sub_subsidiaries": ["PT Mitra Utama Madani (MUM)"] },
+                                { "name": "PT BRI Agroniaga Tbk" }, { "name": "BRI Remittance Co. Ltd." },
+                                { "name": "PT Asuransi BRI Life" }, { "name": "PT BRI Multifinance Indonesia" },
+                                { "name": "PT BRI Ventura Investama" }, { "name": "PT BRI Asuransi Indonesia" },
+                                { "name": "PT Bank Raya Indonesia Tbk" }, { "name": "PT Pegadaian", "sub_subsidiaries": ["PT POJ", "PT PIJ"] },
+                                { "name": "BRI Danareksa Sekuritas" }, { "name": "Danareksa Investment Management" }
+                            ]
+                        },
+                        {
+                            "name": "PT Bank Negara Indonesia (Persero) Tbk (BNI)",
+                            "subsidiaries": [
+                                { "name": "PT BNI Sekuritas", "sub_subsidiaries": ["BNI Securities Pte. Ltd."] },
+                                { "name": "PT BNI Life Insurance" }, { "name": "PT BNI Multifinance" },
+                                { "name": "BNI Remittance Ltd." }, { "name": "PT BANK HIBANK INDONESIA" },
+                                { "name": "PT BNI Modal Ventura" }
+                            ]
+                        },
+                        {
+                            "name": "PT Bank Mandiri (Persero) Tbk",
+                            "subsidiaries": [
+                                { "name": "PT Mandiri Utama Finance" },
+                                { "name": "PT Mandiri Capital Indonesia" },
+                                { "name": "PT Bank Syariah Indonesia Tbk (BSI)" }
+                            ]
+                        },
+                        {
+                            "name": "Perum Percetakan Uang Republik Indonesia (Peruri)",
+                            "subsidiaries": [
+                                { "name": "PT Peruri Properti" }, { "name": "PT Kertas Padalarang" },
+                                { "name": "PT Peruri Wira Timur" }, { "name": "PT Peruri Digital Security" },
+                                { "name": "PT Cardsindo Tiga Perkasa (cucu perusahaan)" },
+                                { "name": "PT Sicpa Peruri Securink (perusahaan afiliasi)" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Jasa Logistik",
+                    "holdings": [
+                        {
+                            "name": "PT Pelabuhan Indonesia (Pelindo)",
+                            "subsidiaries": [
+                                { "name": "PT Pelindo Terminal Petikemas (TPI) (Subholding)", "sub_subsidiaries": ["PT Prima Multi Terminal (55%)", "PT Jakarta International Container Terminal (JICT)"] },
+                                { "name": "PT Pelindo Multi Terminal (Subholding)" },
+                                { "name": "PT Solusi Logistik (Subholding)", "sub_subsidiaries": ["PT Menara Maritim Indonesia", "PT Akses Pelabuhan Indonesia"] },
+                                { "name": "PT Pelindo Jasa Maritim (Subholding)", "sub_subsidiaries": ["PT LEGI"] },
+                                { "name": "PT Prima Husada Cipta Medan" }, { "name": "PT Integrasi Logistik Cipta Solusi" },
+                                { "name": "PT Pendidikan Maritim dan Logistik Indonesia" }, { "name": "PT Pelabuhan Indonesia Investama" },
+                                { "name": "PT Pelindo Husada Cipta Medan" }, { "name": "PT Electronic Data Interchange Indonesia" }
+                            ]
+                        },
+                        {
+                            "name": "PT Kereta Api Indonesia (Persero) (PT KAI)",
+                            "subsidiaries": [
+                                { "name": "PT Reska Multi Usaha" }, { "name": "PT KA Properti Manajemen" },
+                                { "name": "PT KA Pariwisata" }, { "name": "PT Railink" },
+                                { "name": "PT Pilar Sinergi BUMN Indonesia" }, { "name": "PT KAI Commuter Indonesia (KCI)" }
+                            ]
+                        },
+                        { "name": "PT Industri Kereta Api (Persero) (PT INKA)", "subsidiaries": [{ "name": "PT Reka Indo Global Jasa" }, { "name": "PT Inka Multi Solusi" }] },
+                        { "name": "PT Pelayaran Nasional Indonesia (Persero)", "subsidiaries": [{ "name": "PT Sarana Bandar Nasional" }, { "name": "PT PELITA INDONESIA DJAYA" }] },
+                        { "name": "PT ASDP Indonesia Ferry (Persero)", "subsidiaries": [{ "name": "PT Indonesia Ferry Properti" }, { "name": "PT Jembatan Nusantara" }] }
+                    ]
+                },
+                {
+                    "name": "Jasa Pariwisata dan Penerbangan",
+                    "holdings": [
+                        {
+                            "name": "PT Aviasi Pariwisata Indonesia (Persero) (InJourney)",
+                            "subsidiaries": [
+                                { "name": "PT Angkasa Pura Indonesia (InJourney Airports)", "sub_subsidiaries": ["PT Angkasa Pura Logistik", "PT Angkasa Pura Properti", "PT Angkasa Pura Suport", "PT Angkasa Pura Hotel", "PT Angkasa Pura Retail"] },
+                                { "name": "PT Integrasi Aviasi Solusi (InJourney Aviation Services)" },
+                                { "name": "PT Hotel Indonesia Natour", "sub_subsidiaries": ["PT Hotel Indonesia Properti (HIPRO)"] },
+                                { "name": "PT Sarinah" },
+                                { "name": "PT Taman Wisata Candi Borobudur, Prambanan, dan Ratu Boko (TWC)" },
+                                { "name": "PT Pengembangan Pariwisata Indonesia (ITDC)", "sub_subsidiaries": ["ITDC Nusantara Utilities (INU)"] }
+                            ]
+                        },
+                        {
+                            "name": "PT Garuda Indonesia (Persero)",
+                            "subsidiaries": [
+                                { "name": "PT Aero Wisata" }, { "name": "PT Sabre Travel Network Indonesia" },
+                                { "name": "PT Garuda Maintenance Facility Aero Asia Tbk (GMFAA)" },
+                                { "name": "PT Aero Systems Indonesia (ASYST)" },
+                                { "name": "PT Citilink Indonesia" }, { "name": "PT Gapura Angkasa" },
+                                { "name": "Garuda Indonesia Holiday France" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Jasa Telekomunikasi dan Media",
+                    "holdings": [
+                        {
+                            "name": "PT Telekomunikasi Indonesia (Persero) Tbk (Telkom Indonesia)",
+                            "subsidiaries": [
+                                { "name": "PT PINS Indonesia" }, { "name": "PT Graha Sarana Duta" },
+                                { "name": "PT Multimedia Nusantara (Metra)", "sub_subsidiaries": ["PT Administrasi Medika (AdMedika)", "PT Finnet Indonesia (Finnet)", "PT Nuon Digital Indonesia (Nuon)", {"name": "PT Infomedia Nusantara", "sub_subsidiaries": ["PT Infomedia Solusi Humanika", "PT Balebat Dedikasi Prima"]}] },
+                                { "name": "PT Sigma Cipta Caraka (Telkomsigma)", "sub_subsidiaries": ["PT Sigma Solusi Integrasi", "PT Sigma Karya Sempurna", "PT Signet Pratama", "Sigma AIT Sdn., Bhd.", "PT Sigma Metrasys Solution", "PT Graha Telkomsigma"] },
+                                { "name": "PT Metra-Net" }, { "name": "PT Dayamitra Telekomunikasi Indonesia Tbk" },
+                                { "name": "PT Telekomunikasi Indonesia International (Telin)" },
+                                { "name": "PT Napsindo Primatel International" }, { "name": "PT Telkom Akses" },
+                                { "name": "PT Telekomunikasi Selular (Telkomsel)", "sub_subsidiaries": ["Telkomsel Finance B.V (TFBV)", "Telekomunikasi Seluler Finance Ltd. (TSFL)"] },
+                                { "name": "PT Telkom Satelit Indonesia (Telkomsat)" },
+                                { "name": "PT Telekomunikasi Infrastruktur Indonesia (TIF)" },
+                                { "name": "PT Telkom Data Ekosistem" }
+                            ]
+                        },
+                        { "name": "PT Produksi Film Negara (Persero)" },
+                        { "name": "Perum Lembaga Kantor Berita Nasional Antara (ANTARA)", "subsidiaries": [{ "name": "PT Antara Kencana Utama Estate Limited" }, { "name": "PT Antara Elektronik Transaksi Pratama" }] },
+                        { "name": "PT Industri Telekomunikasi Indonesia (Persero) (PT INTI)", "subsidiaries": [{ "name": "PT Inti Pindad Mitra Sejati" }, { "name": "PT Inti Konten Indonesia" }] }
+                    ]
+                }
+            ]
+        };
+
+        const clusterNav = document.querySelector('#cluster-nav ul');
+        const mainContent = document.getElementById('main-content');
+        let activeClusterLink = null;
+        let chartInstance = null;
+        
+        const createWelcomeMessage = () => {
+            return `
+                <div class="text-center bg-white p-12 rounded-3xl shadow-xl border border-slate-200 group-item-enter">
+                    <div class="flex justify-center mb-6">
+                        <div class="bg-blue-100 text-blue-600 p-5 rounded-full">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-extrabold mb-3 text-slate-900">Selamat Datang di Eksplorator BUMN</h2>
+                    <p class="text-lg text-slate-600 max-w-2xl mx-auto">Aplikasi ini memvisualisasikan struktur kompleks Holding BUMN di Indonesia. Pilih salah satu klaster usaha dari menu di samping untuk mulai menjelajahi perusahaan holding, anak perusahaan, dan entitas turunannya.</p>
+                </div>
+            `;
+        };
+
+        const createSubsidiaryHTML = (subsidiaries) => {
+            if (!subsidiaries || subsidiaries.length === 0) return '';
+            let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
+            subsidiaries.forEach(sub => {
+                const hasSubSubs = sub.sub_subsidiaries && sub.sub_subsidiaries.length > 0;
+                html += `
+                    <li class="text-slate-700 relative">
+                       <span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200"></span>
+                       <div class="flex items-start gap-2">
+                            <span class="text-blue-600 mt-1">&#8227;</span>
+                            <div class="flex-1">
+                                <span>${typeof sub === 'string' ? sub : sub.name}</span>
+                                ${hasSubSubs ? createSubsidiaryHTML(sub.sub_subsidiaries) : ''}
+                            </div>
+                       </div>
+                    </li>`;
+            });
+            html += '</ul>';
+            return html;
+        };
+
+        const displayCluster = (clusterName) => {
+            const clusterData = bumnData.clusters.find(c => c.name === clusterName);
+            if (!clusterData) {
+                mainContent.innerHTML = createWelcomeMessage();
+                return;
+            }
+
+            let contentHTML = `
+                <div class="group-item-enter">
+                    <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
+                    <p class="text-xl text-slate-600 mb-10">Berikut adalah pemetaan perusahaan holding di dalam klaster ${clusterData.name}. Klik pada setiap kartu untuk melihat struktur anak perusahaannya.</p>
+                </div>
+            `;
+            
+            if (clusterData.holdings && clusterData.holdings.length > 0) {
+                 contentHTML += `
+                    <div class="mb-12 group-item-enter" style="animation-delay: 0.1s;">
+                       <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-6">Distribusi Anak Perusahaan per Holding</h3>
+                            <div class="chart-container">
+                                <canvas id="clusterChart"></canvas>
+                            </div>
+                       </div>
+                    </div>
+                 `;
+            }
+
+            contentHTML += '<div class="space-y-8">';
+            clusterData.holdings.forEach((holding, index) => {
+                const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
+                contentHTML += `
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden content-card group-item-enter" style="animation-delay: ${0.2 + index * 0.1}s;">
+                        <button class="w-full text-left p-7 hover:bg-blue-50/20 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
+                            <div>
+                                <h3 class="text-2xl font-semibold text-blue-700">${holding.name}</h3>
+                                <p class="text-slate-600 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
+                            </div>
+                             <svg class="w-7 h-7 text-slate-400 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-slate-100">
+                           <div class="pt-5">
+                            ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
+                           </div>
+                        </div>
+                    </div>`;
+            });
+            contentHTML += '</div>';
+
+            mainContent.innerHTML = contentHTML;
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
+            if (chartCtx) {
+                const labels = clusterData.holdings.map(h => h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));
+                const data = clusterData.holdings.map(h => h.subsidiaries ? h.subsidiaries.length : 0);
+
+                chartInstance = new Chart(chartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Jumlah Anak Perusahaan',
+                            data: data,
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)', /* Deeper blue */
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8, /* More rounded bars */
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+                            x: { 
+                                grid: { display: false },
+                                ticks: {
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 45,
+                                    callback: function(value, index, values) {
+                                        const label = this.getLabelForValue(value);
+                                        if (label.length > 16) {
+                                            return label.split(' ').map((word, i) => i === 0 ? word : word); // Simple wrap attempt
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { size: 16, weight: 'bold' },
+                                bodyFont: { size: 14 },
+                                padding: 14,
+                                cornerRadius: 8,
+                                displayColors: false
+                            }
+                        }
+                    }
+                });
+            }
+        };
+
+        mainContent.addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-target]');
+            if (button) {
+                const targetId = button.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                const icon = button.querySelector('svg');
+
+                if (targetElement) {
+                    const isVisible = targetElement.style.display === 'block';
+                    if (isVisible) {
+                        targetElement.style.display = 'none';
+                        icon.classList.remove('rotate-180');
+                    } else {
+                        targetElement.style.display = 'block';
+                        icon.classList.add('rotate-180');
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            bumnData.clusters.forEach(cluster => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = cluster.name;
+                a.className = 'flex items-center p-3 text-slate-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 font-medium';
+                a.dataset.cluster = cluster.name;
+                
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+
+                    if (activeClusterLink) {
+                        activeClusterLink.classList.remove('bg-blue-100', 'text-blue-800', 'font-semibold');
+                    }
+                    a.classList.add('bg-blue-100', 'text-blue-800', 'font-semibold');
+                    activeClusterLink = a;
+                    
+                    displayCluster(cluster.name);
+                });
+                li.appendChild(a);
+                clusterNav.appendChild(li);
+            });
+            mainContent.innerHTML = createWelcomeMessage();
+        });
+    </script>
+
 </body>
 </html>
