@@ -10,23 +10,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     html, body { height: 100%; font-family: 'Inter', sans-serif;}
-    body {
-      background: linear-gradient(135deg,#e0edfa 0%, #f9fafb 100%)!important;
-      transition: background 0.3s;
-    }
+    body { background: linear-gradient(135deg,#e0edfa 0%, #f9fafb 100%)!important; transition: background 0.3s;}
     .card-glass {
       background: #fff !important;
-      backdrop-filter: none !important;
       border-radius: 1.5rem;
       box-shadow: 0 10px 32px -12px #aecbfa33, 0 1.5px 12px 0 #bcd4fa20;
     }
-    .card-dark { background: #1e293b !important; color: #f1f5f9;}
     .sidebar-gradient {
       background: linear-gradient(180deg,#3793f7c0 60%,#60a5fac0 100%)!important;
       backdrop-filter: blur(10px)!important;
       box-shadow: 0 6px 24px -8px #2563eb2a;
     }
-    .sidebar-dark { background: #111827 !important; }
     .sidebar-item-active {
       background: #2563eb!important;
       color: #fff!important;
@@ -40,8 +34,26 @@
     .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
     .group-item-enter { animation: fadeIn 0.6s cubic-bezier(.32,2,.55,.27) forwards; opacity:0; transform:translateY(12px);}
     @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
-    .dark body { background: linear-gradient(120deg, #181f2e 0%, #23304d 100%)!important; }
-    .dark .card-glass { background: #23304d!important; color:#f3f6fd; border-color: #223455;}
+    .btn-blue { background:#2563eb; color:#fff; font-weight:600; }
+    .btn-blue:hover { background:#3b82f6; color:#fff; }
+    .searchbar:focus { outline:2px solid #2563eb; background: #e0edfa; }
+    @media (max-width: 1023px) {
+      #sidebar { position: fixed; top:0; left:0; right:0; width:100vw!important; min-width:0; height:auto!important; z-index:30; border-radius:0 0 1.5rem 1.5rem;}
+      #sidebar nav { flex-wrap:nowrap; overflow-x:auto;}
+      .main-wrap { margin-top: 172px!important;}
+      .sidebar-gradient, .sidebar-dark { border-radius: 0 0 2rem 2rem;}
+    }
+    @media (max-width: 768px) {
+      .main-wrap { margin-top: 184px!important;}
+      .sidebar-gradient { border-radius: 0 0 1.5rem 1.5rem!important;}
+    }
+    @media (max-width: 500px) {
+      .main-wrap { margin-top: 225px!important;}
+      #sidebar h1, .sidebar-title-text { font-size: 1rem!important;}
+      #sidebar nav ul li a { font-size: .92rem!important;}
+    }
+    .dark body { background: linear-gradient(120deg, #181f2e 0%, #23304d 100%)!important;}
+    .dark .card-glass { background: #23304d!important; color:#f3f6fd;}
     .dark .sidebar-gradient { background: #111827!important; }
     .dark .sidebar-item-active { background: #334155!important; color:#ffe;}
     .dark .sidebar-item { color: #f1f5f9!important; }
@@ -54,66 +66,54 @@
     .dark .border-blue-100, .dark .border-blue-200 { border-color: #334155!important; }
     .dark .scrollbar-thin::-webkit-scrollbar-thumb { background: #334155; }
     .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
-    .transition-all { transition: all 0.2s; }
-    .btn-blue { background:#2563eb; color:#fff; font-weight:600; }
-    .btn-blue:hover { background:#3b82f6; color:#fff; }
-    .searchbar:focus { outline:2px solid #2563eb; background: #e0edfa; }
-    .dark .searchbar:focus { background: #192034; }
-    @media (max-width: 768px) {
-      #sidebar { position: static!important; width:100%!important; min-width:0;}
-      main { margin-left: 0!important; }
-      .sidebar-gradient, .sidebar-dark { border-radius: 0 0 2rem 2rem; }
-    }
+    ::selection { background: #bfdbfe; color: #1e293b;}
   </style>
 </head>
 <body class="text-slate-800">
 
-<div class="flex flex-col md:flex-row min-h-screen">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar-gradient w-full md:w-72 md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 flex flex-col justify-between scrollbar-thin"
-    style="overflow-y:auto; max-height:100vh;">
-    <div>
-      <div class="flex items-center gap-2 mb-5 p-6 pt-7">
-        <span class="text-2xl font-extrabold text-white tracking-wide flex items-center gap-3">
-          <span style="font-size:2rem;line-height:1;" aria-label="BUMN">🏢</span>
-          Holding BUMN
-        </span>
-        <button id="toggle-dark" aria-label="Toggle dark/light mode"
-          class="ml-auto rounded-full p-2 transition hover:bg-white/30 hover:backdrop-blur"
-          title="Toggle dark/light mode">
-          <svg id="icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="5" stroke="#ffd600" stroke-width="2" fill="#ffd600"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M17.66 17.66l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42" stroke="#ffd600" stroke-width="2"/>
-          </svg>
-          <svg id="icon-light" style="display:none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <circle cx="12" cy="12" r="6" stroke="#e0e7ef" stroke-width="2" fill="#222e3e"/><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" fill="#ffe600"/>
-          </svg>
-        </button>
-      </div>
-      <div class="px-4 mb-4 flex gap-2">
-        <input id="searchbar" type="text" class="searchbar w-full px-3 py-2 rounded-lg border border-blue-100 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-300 transition"
-          placeholder="Cari Klaster, Holding, atau Anak Perusahaan...">
-        <button id="clear-search" class="ml-1 text-blue-500 hover:bg-blue-100 rounded-full p-2" title="Clear search" style="display:none">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l8 8M6 14L14 6"/></svg>
-        </button>
-      </div>
-      <nav id="cluster-nav" class="mb-8 px-2 pb-6">
-        <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-3">Klaster Usaha</h2>
-        <ul class="space-y-1"></ul>
-      </nav>
+<!-- Responsive sticky header/sidebar -->
+<div id="sidebar" class="sidebar-gradient flex flex-col md:w-72 fixed md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 top-0 left-0 md:left-auto w-full md:rounded-r-3xl justify-between scrollbar-thin" style="overflow-y:auto; max-height:100vh;">
+  <div>
+    <div class="flex items-center gap-2 mb-5 p-5 pt-7 relative">
+      <span class="text-2xl font-extrabold text-white tracking-wide flex items-center gap-2 sidebar-title-text">
+        <span style="font-size:2rem;line-height:1;" aria-label="BUMN">🏢</span>
+        Holding BUMN
+      </span>
+      <button id="toggle-dark" aria-label="Toggle dark/light mode"
+        class="ml-auto rounded-full p-2 transition hover:bg-white/30 hover:backdrop-blur absolute right-4 md:static"
+        title="Toggle dark/light mode" style="top:16px;">
+        <svg id="icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="12" cy="12" r="5" stroke="#ffd600" stroke-width="2" fill="#ffd600"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M17.66 17.66l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42" stroke="#ffd600" stroke-width="2"/>
+        </svg>
+        <svg id="icon-light" style="display:none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="12" cy="12" r="6" stroke="#e0e7ef" stroke-width="2" fill="#222e3e"/><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" fill="#ffe600"/>
+        </svg>
+      </button>
     </div>
-    <footer class="p-4 pb-6 text-xs text-blue-100 text-center opacity-80 select-none">
-      © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
-      <div class="flex gap-2 justify-center mt-2">
-        <button onclick="shareApp()" class="rounded-lg px-2 py-1 text-xs bg-blue-200/80 hover:bg-blue-400/90 text-blue-700 font-semibold shadow transition">Share</button>
-        <a href="https://www.flaticon.com/" target="_blank" rel="noopener" class="text-xs underline text-blue-200/90 hover:text-white">Icons: Flaticon</a>
-      </div>
-    </footer>
-  </aside>
+    <div class="px-4 mb-2 flex gap-2 w-full">
+      <input id="searchbar" type="text" class="searchbar w-full px-3 py-2 rounded-lg border border-blue-100 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-300 transition"
+        placeholder="Cari Klaster, Holding, atau Anak Perusahaan...">
+      <button id="clear-search" class="ml-1 text-blue-500 hover:bg-blue-100 rounded-full p-2" title="Clear search" style="display:none">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l8 8M6 14L14 6"/></svg>
+      </button>
+    </div>
+    <nav id="cluster-nav" class="mb-8 px-2 pb-2">
+      <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-3">Klaster Usaha</h2>
+      <ul class="space-y-1 flex md:flex-col flex-row overflow-x-auto md:overflow-visible w-full"></ul>
+    </nav>
+  </div>
+  <footer class="p-3 text-xs text-blue-100 text-center opacity-80 select-none w-full">
+    © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
+    <div class="flex gap-2 justify-center mt-2">
+      <button onclick="shareApp()" class="rounded-lg px-2 py-1 text-xs bg-blue-200/80 hover:bg-blue-400/90 text-blue-700 font-semibold shadow transition">Share</button>
+      <a href="https://www.flaticon.com/" target="_blank" rel="noopener" class="text-xs underline text-blue-200/90 hover:text-white">Icons: Flaticon</a>
+    </div>
+  </footer>
+</div>
 
-  <!-- Main content -->
-  <main class="flex-1 md:ml-72 p-4 sm:p-8 transition-all duration-300 min-h-screen flex items-center justify-center bg-none">
-    <div id="main-content" class="w-full"></div>
-  </main>
+<!-- Main content -->
+<div class="main-wrap flex-1 md:ml-72 p-4 sm:p-8 transition-all duration-300 min-h-screen flex items-center justify-center bg-none">
+  <div id="main-content" class="w-full"></div>
 </div>
 
 <script>
@@ -557,7 +557,6 @@ let activeClusterLink = null;
 let chartInstance = null;
 let isDark = false;
 
-/* ----------- WELCOME CARD ------------ */
 const createWelcomeMessage = () => `
   <div class="card-glass p-10 pt-14 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
     <div class="flex justify-center mb-5">
@@ -576,7 +575,6 @@ const createWelcomeMessage = () => `
   </div>
 `;
 
-/* ----------- SUBSIDIARY CARD TREE ----------- */
 const createSubsidiaryHTML = (subsidiaries) => {
   if (!subsidiaries || subsidiaries.length === 0) return '';
   let html = '<ul class="pl-6 mt-2 space-y-1 border-l-2 border-blue-200">';
@@ -599,7 +597,6 @@ const createSubsidiaryHTML = (subsidiaries) => {
   return html;
 };
 
-/* ---------- CLUSTER/CARD DISPLAY ----------- */
 const displayCluster = (clusterName, autoExpand = false, filterText = "") => {
   const clusterData = bumnData.clusters.find(c => c.name === clusterName);
   if (!clusterData) {
@@ -611,7 +608,8 @@ const displayCluster = (clusterName, autoExpand = false, filterText = "") => {
       <button class="btn-blue px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
         onclick="window.showHome()"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg> Beranda</button>
       <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
-      <p class="text-xl text-slate-600 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
+      <p class="text-xl text-slate-600 mb-7">Pemetaan perusahaan holding di klaster ini.<br>
+      <span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
     </div>
   `;
   if (clusterData.holdings && clusterData.holdings.length > 0) {
@@ -619,23 +617,21 @@ const displayCluster = (clusterName, autoExpand = false, filterText = "") => {
       <div class="mb-10 group-item-enter" style="animation-delay: 0.1s;">
         <div class="card-glass p-7 rounded-2xl shadow-xl border border-blue-200">
           <h3 class="text-2xl font-bold text-blue-700 mb-6">Distribusi Anak Perusahaan</h3>
-          <div class="chart-container" style="width:100%;max-width:700px;margin:auto;height:260px;">
+          <div class="chart-container" style="width:100%;max-width:700px;margin:auto;height:240px;">
             <canvas id="clusterChart"></canvas>
           </div>
         </div>
       </div>
     `;
   }
-  contentHTML += '<div class="space-y-8">';
+  contentHTML += '<div class="space-y-7">';
   clusterData.holdings.forEach((holding, index) => {
     const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
-    // search filter
     let cardShow = true;
     let filteredSubs = holding.subsidiaries;
     if (filterText) {
       const q = filterText.toLowerCase();
       if (!holding.name.toLowerCase().includes(q)) {
-        // filter anak
         if (hasSubsidiaries) {
           filteredSubs = holding.subsidiaries.filter(s => {
             if (typeof s === "string") return s.toLowerCase().includes(q);
@@ -669,7 +665,6 @@ const displayCluster = (clusterName, autoExpand = false, filterText = "") => {
   });
   contentHTML += '</div>';
   mainContent.innerHTML = contentHTML;
-  // Chart
   if (chartInstance) chartInstance.destroy();
   const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
   if (chartCtx) {
@@ -680,14 +675,13 @@ const displayCluster = (clusterName, autoExpand = false, filterText = "") => {
       data: { labels: labels, datasets: [{ label: 'Jumlah Anak Perusahaan', data: data, backgroundColor: 'rgba(59,130,246,0.85)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, borderRadius: 8, }] },
       options: {
         responsive: true, maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true, grid: { color: '#e0e7ef' } }, x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } } },
+        scales: { y: { beginAtZero: true, grid: { color: isDark ? '#222e3e' : '#e0e7ef' } }, x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } } },
         plugins: { legend: { display: false }, tooltip: { backgroundColor: isDark ? '#1e293b' : '#2563eb', titleFont: { size: 16, weight: 'bold' }, bodyFont: { size: 14 }, padding: 14, cornerRadius: 8, displayColors: false } }
       }
     });
   }
 };
 
-/* --------- SIDEBAR NAV BUILD -------- */
 function buildSidebarList(filteredList=[]) {
   clusterNav.innerHTML = '';
   (filteredList.length?filteredList:bumnData.clusters).forEach((cluster, i) => {
@@ -709,7 +703,6 @@ function buildSidebarList(filteredList=[]) {
   });
 }
 
-/* --------- TOGGLE SUBSIDIARY CARD --------- */
 mainContent.addEventListener('click', (e) => {
   const button = e.target.closest('button[data-target]');
   if (button) {
@@ -724,7 +717,6 @@ mainContent.addEventListener('click', (e) => {
   }
 });
 
-/* --------- SEARCH FEATURE (FULL FILTER ALL LEVELS) --------- */
 searchbar.addEventListener('input', function() {
   let q = searchbar.value.trim().toLowerCase();
   clearSearch.style.display = q ? 'inline' : 'none';
@@ -733,7 +725,6 @@ searchbar.addEventListener('input', function() {
     window.showHome();
     return;
   }
-  // Search cluster, holding, child, grandchild
   let result = bumnData.clusters.filter(cluster =>
     cluster.name.toLowerCase().includes(q) ||
     (cluster.holdings && cluster.holdings.some(holding =>
@@ -748,7 +739,6 @@ searchbar.addEventListener('input', function() {
     ))
   );
   buildSidebarList(result);
-  // Otomatis buka cluster pertama
   if (result.length) displayCluster(result[0].name, true, q);
   else mainContent.innerHTML = '<div class="card-glass p-10 rounded-3xl shadow-xl border border-blue-100 max-w-2xl mx-auto text-center text-blue-800 font-semibold text-lg">Tidak ditemukan hasil untuk <span class="text-blue-600">"' + searchbar.value + '"</span></div>';
 });
@@ -759,13 +749,12 @@ clearSearch.onclick = () => {
   window.showHome();
 };
 
-/* --------- WELCOME INIT + DARK/LIGHT MODE --------- */
 window.showHome = function() {
   mainContent.innerHTML = createWelcomeMessage();
   if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
   activeClusterLink = null;
 };
-// Dark/Light toggle
+
 const htmlRoot = document.documentElement, btnToggleDark = document.getElementById('toggle-dark');
 const iconDark = document.getElementById('icon-dark'), iconLight = document.getElementById('icon-light');
 function setDarkMode(dark) {
@@ -784,13 +773,12 @@ btnToggleDark.onclick = () => setDarkMode(!isDark);
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(true);
 else setDarkMode(false);
 
-// Responsive sidebar auto scroll on desktop
 window.addEventListener('DOMContentLoaded',()=>{
   buildSidebarList();
   showHome();
   document.getElementById('sidebar').scrollTop = 0;
 });
-// Share API
+
 window.shareApp = function() {
   if (navigator.share) {
     navigator.share({
@@ -803,6 +791,8 @@ window.shareApp = function() {
   }
 }
 </script>
+</body>
+</html>
 
 </body>
 </html>
