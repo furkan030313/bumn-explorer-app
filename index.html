@@ -47,6 +47,9 @@
     ::selection { background: #bfdbfe; color: #1e293b;}
     @media (min-width: 768px) { #sidebar { min-height: 100vh; } }
     .search-input::placeholder { color: #bfdbfe; opacity:1;}
+    .subsidiary-list { display: none; }
+    .accordion-open { display: block !important; }
+    .rotate-180 { transform: rotate(180deg);}
   </style>
 </head>
 <body class="text-slate-800">
@@ -70,7 +73,7 @@
       <div class="px-6 pb-2">
         <div class="relative">
           <input type="text" id="search" class="search-input w-full bg-white/20 text-white placeholder-blue-100 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/40 transition"
-            placeholder="Cari Klaster/Holding..." autocomplete="off">
+            placeholder="Cari Klaster, Holding, atau Anak Perusahaan..." autocomplete="off">
           <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-100 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
         </div>
       </div>
@@ -518,6 +521,21 @@ const bumnData = { "clusters": [
     }
 ]};
 
+// Helper: Search subsidiary recursive
+function searchInSubsidiaries(subs, q) {
+  if (!subs) return false;
+  for (const sub of subs) {
+    if (typeof sub === 'string') {
+      if (sub.toLowerCase().includes(q)) return true;
+    } else if (sub.name && sub.name.toLowerCase().includes(q)) {
+      return true;
+    } else if (sub.sub_subsidiaries && searchInSubsidiaries(sub.sub_subsidiaries, q)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const clusterNav = document.querySelector('#cluster-nav ul');
 const mainContent = document.getElementById('main-content');
 const searchInput = document.getElementById('search');
@@ -567,13 +585,13 @@ const createSubsidiaryHTML = (subsidiaries) => {
   return html;
 };
 
+// TAMPILKAN KLASTER: Accordion tertutup
 const displayCluster = (clusterName) => {
   const clusterData = bumnData.clusters.find(c => c.name === clusterName);
   if (!clusterData) {
     mainContent.innerHTML = createWelcomeMessage();
     return;
   }
-
   let contentHTML = `
     <div class="group-item-enter">
       <button class="homebtn bg-blue-100/60 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
@@ -594,7 +612,6 @@ const displayCluster = (clusterName) => {
       </div>
     `;
   }
-
   contentHTML += '<div class="space-y-8">';
   clusterData.holdings.forEach((holding, index) => {
     const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
@@ -616,6 +633,8 @@ const displayCluster = (clusterName) => {
   });
   contentHTML += '</div>';
   mainContent.innerHTML = contentHTML;
+  // Accordion semua dalam kondisi tertutup (display: none).
+  // Chart
   if (chartInstance) chartInstance.destroy();
   const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
   if (chartCtx) {
@@ -657,7 +676,7 @@ const displayCluster = (clusterName) => {
   }
 };
 
-// Accordion panel
+// Accordion toggle (default collapsed)
 mainContent.addEventListener('click', (e) => {
   const button = e.target.closest('button[data-target]');
   if (button) {
@@ -665,16 +684,22 @@ mainContent.addEventListener('click', (e) => {
     const targetElement = document.getElementById(targetId);
     const icon = button.querySelector('svg');
     if (targetElement) {
-      const isVisible = targetElement.style.display === 'block';
-      targetElement.style.display = isVisible ? 'none' : 'block';
-      icon.classList.toggle('rotate-180', !isVisible);
+      const isVisible = targetElement.classList.contains('accordion-open');
+      if (isVisible) {
+        targetElement.classList.remove('accordion-open');
+        icon.classList.remove('rotate-180');
+      } else {
+        targetElement.classList.add('accordion-open');
+        icon.classList.add('rotate-180');
+      }
     }
   }
 });
 
-function renderSidebarList(filteredClusters) {
-  clusterNav.innerHTML = "";
-  filteredClusters.forEach(cluster => {
+// Render sidebar list (with search)
+function renderSidebarList(clusters) {
+  clusterNav.innerHTML = '';
+  clusters.forEach(cluster => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = '#';
@@ -708,7 +733,7 @@ window.showHome = function() {
   renderSidebarList(bumnData.clusters);
 };
 
-// === SEARCH FILTERING ===
+// === SEARCH FILTERING (Cluster, Holding, Subsidiary, Sub-sub) ===
 searchInput.addEventListener('input', function() {
   const val = searchInput.value.trim().toLowerCase();
   let filtered = [];
@@ -716,13 +741,14 @@ searchInput.addEventListener('input', function() {
     filtered = bumnData.clusters;
   } else {
     bumnData.clusters.forEach(cluster => {
-      // Cek klaster cocok
+      // Cluster cocok
       if (cluster.name.toLowerCase().includes(val)) {
         filtered.push(cluster);
       } else {
-        // Cek holding cocok
+        // Cari holding atau anak perusahaan
         const matchingHoldings = cluster.holdings.filter(h =>
-          h.name.toLowerCase().includes(val)
+          h.name.toLowerCase().includes(val) ||
+          searchInSubsidiaries(h.subsidiaries, val)
         );
         if (matchingHoldings.length) {
           filtered.push({
