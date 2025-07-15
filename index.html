@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eksplorator Struktur Holding BUMN</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='36' height='36' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='18' cy='18' rx='18' ry='18' fill='%233b82f6'/%3E%3Cpath d='M18 7v14.5M18 25.7h.01' stroke='%23fff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,15 +16,19 @@
         .rotate-180 { transform: rotate(180deg);}
         .sidebar-gradient { background: linear-gradient(160deg,#1e3a8a 75%,#60a5fa 100%);}
         .sidebar-item-active { background: #2563eb; color: #fff !important; font-weight: 700; box-shadow: 0 6px 16px -8px #3b82f6; }
-        .card-glass { background:rgba(255,255,255,0.7); backdrop-filter: blur(8px);}
+        .card-glass { background:rgba(255,255,255,0.74); backdrop-filter: blur(8px);}
         .homebtn { transition: .15s;}
         .homebtn:hover { background: #dbeafe; color: #1d4ed8;}
         .group-item-enter { animation: fadeIn 0.5s cubic-bezier(.32,2,.55,.27) forwards; opacity:0; transform:translateY(12px);}
         @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width:8px;}
-        ::-webkit-scrollbar-thumb { background:#dbeafe; border-radius:16px;}
-        ::-webkit-scrollbar-thumb:hover { background:#60a5fa;}
+        /* Custom scrollbar for sidebar only */
+        #sidebar nav::-webkit-scrollbar { width:10px; }
+        #sidebar nav::-webkit-scrollbar-thumb {
+            background: linear-gradient(120deg, #60a5fa 10%, #2563eb 90%);
+            border-radius: 10px;
+        }
+        #sidebar nav::-webkit-scrollbar-track { background:transparent;}
+        #sidebar nav { scrollbar-color: #60a5fa #f1f5f9; scrollbar-width: thin;}
         ::selection { background: #bfdbfe; color: #1e293b;}
     </style>
 </head>
@@ -31,31 +36,25 @@
 
 <div class="flex flex-col md:flex-row min-h-screen">
     <!-- Sidebar -->
-<aside id="sidebar"
-    class="sidebar-gradient w-full md:w-72 md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 flex flex-col justify-between">
-
-    <div class="flex flex-col flex-1 min-h-0"> <!-- WRAPPER BARU untuk scroll area -->
-        <!-- Logo -->
-        <div class="flex items-center gap-3 mb-8 p-6 pt-7 flex-shrink-0">
-            <div class="bg-white/20 p-3 rounded-xl shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
+    <aside id="sidebar" class="sidebar-gradient w-full md:w-72 md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 flex flex-col justify-between">
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="flex items-center gap-3 mb-8 p-6 pt-7 flex-shrink-0">
+                <div class="bg-white/20 p-3 rounded-xl shadow-lg">
+                    <!-- Logo SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/><path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h1 class="text-2xl font-extrabold text-white tracking-wide">Holding BUMN</h1>
             </div>
-            <h1 class="text-2xl font-extrabold text-white tracking-wide">Holding BUMN</h1>
+            <!-- Scrollable Nav Area -->
+            <nav id="cluster-nav" class="flex-1 overflow-y-auto px-4 pb-4" style="scrollbar-gutter: stable;">
+                <h2 class="text-sm font-bold text-blue-100 uppercase tracking-widest mb-4">Klaster Usaha</h2>
+                <ul class="space-y-1"></ul>
+            </nav>
         </div>
-        <!-- Scrollable Nav Area -->
-        <nav id="cluster-nav" class="flex-1 overflow-y-auto px-4 pb-4" style="scrollbar-gutter: stable;">
-            <h2 class="text-sm font-bold text-blue-100 uppercase tracking-widest mb-4">Klaster Usaha</h2>
-            <ul class="space-y-1"></ul>
-        </nav>
-    </div>
-    <footer class="p-4 pb-6 text-xs text-blue-100 text-center opacity-80 select-none flex-shrink-0">
-        © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
-    </footer>
-</aside>
+        <footer class="p-4 pb-6 text-xs text-blue-100 text-center opacity-80 select-none flex-shrink-0">
+            © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
+        </footer>
+    </aside>
 
     <!-- Main content -->
     <main class="flex-1 md:ml-72 p-4 sm:p-10 transition-all duration-300 min-h-screen flex items-center justify-center" style="background: none;">
@@ -64,7 +63,6 @@
 </div>
 
 <script>
-// --------- Data bumnData: sama dengan versi sebelumnya, lengkap 11 klaster ---------
 const bumnData = { "clusters": [
     // 1. Energi, Minyak dan Gas
     {
@@ -494,19 +492,17 @@ const bumnData = { "clusters": [
         ]
     }
 ]};
-// --------- END Data bumnData ---------
 
 const clusterNav = document.querySelector('#cluster-nav ul');
 const mainContent = document.getElementById('main-content');
 let activeClusterLink = null;
 let chartInstance = null;
 
-// Tampilan Welcome
 const createWelcomeMessage = () => `
     <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
         <div class="flex justify-center mb-6">
             <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/><path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
         </div>
         <h2 class="text-3xl font-extrabold mb-3 text-blue-900 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
@@ -519,7 +515,6 @@ const createWelcomeMessage = () => `
     </div>
 `;
 
-// Buat subsidiary HTML rekursif
 const createSubsidiaryHTML = (subsidiaries) => {
     if (!subsidiaries || subsidiaries.length === 0) return '';
     let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
@@ -542,7 +537,6 @@ const createSubsidiaryHTML = (subsidiaries) => {
     return html;
 };
 
-// Tampilkan klaster
 const displayCluster = (clusterName) => {
     const clusterData = bumnData.clusters.find(c => c.name === clusterName);
     if (!clusterData) {
@@ -593,14 +587,11 @@ const displayCluster = (clusterName) => {
     contentHTML += '</div>';
 
     mainContent.innerHTML = contentHTML;
-    
-    // Chart
     if (chartInstance) chartInstance.destroy();
     const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
     if (chartCtx) {
         const labels = clusterData.holdings.map(h => h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));
         const data = clusterData.holdings.map(h => h.subsidiaries ? h.subsidiaries.length : 0);
-
         chartInstance = new Chart(chartCtx, {
             type: 'bar',
             data: {
@@ -640,7 +631,6 @@ const displayCluster = (clusterName) => {
     }
 };
 
-// Toggle accordion & animasi panah
 mainContent.addEventListener('click', (e) => {
     const button = e.target.closest('button[data-target]');
     if (button) {
@@ -655,7 +645,6 @@ mainContent.addEventListener('click', (e) => {
     }
 });
 
-// Sidebar nav
 document.addEventListener('DOMContentLoaded', () => {
     bumnData.clusters.forEach((cluster, i) => {
         const li = document.createElement('li');
@@ -677,7 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showHome();
 });
 
-// Untuk global akses dari tombol "Beranda"
 window.showHome = function() {
     mainContent.innerHTML = createWelcomeMessage();
     if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
