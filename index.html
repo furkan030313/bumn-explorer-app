@@ -11,22 +11,9 @@
   <style>
     html, body { height: 100%; font-family: 'Inter', sans-serif;}
     body { background: linear-gradient(135deg,#e0edfa 0%, #f9fafb 100%)!important; transition: background 0.3s;}
-    .card-glass {
-      background: #fff !important;
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 32px -12px #aecbfa33, 0 1.5px 12px 0 #bcd4fa20;
-    }
-    .sidebar-gradient {
-      background: linear-gradient(180deg,#3793f7c0 60%,#60a5fac0 100%)!important;
-      backdrop-filter: blur(10px)!important;
-      box-shadow: 0 6px 24px -8px #2563eb2a;
-    }
-    .sidebar-item-active {
-      background: #2563eb!important;
-      color: #fff!important;
-      font-weight: 700;
-      box-shadow: 0 6px 16px -8px #3b82f6;
-    }
+    .card-glass { background: #fff !important; border-radius: 1.5rem; box-shadow: 0 10px 32px -12px #aecbfa33, 0 1.5px 12px 0 #bcd4fa20;}
+    .sidebar-gradient { background: linear-gradient(180deg,#3793f7c0 60%,#60a5fac0 100%)!important; backdrop-filter: blur(10px)!important; }
+    .sidebar-item-active { background: #2563eb!important; color: #fff!important; font-weight: 700; }
     .rotate-180 { transform: rotate(180deg);}
     .scrollbar-thin::-webkit-scrollbar { width: 7px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 12px; }
@@ -37,20 +24,27 @@
     .btn-blue { background:#2563eb; color:#fff; font-weight:600; }
     .btn-blue:hover { background:#3b82f6; color:#fff; }
     .searchbar:focus { outline:2px solid #2563eb; background: #e0edfa; }
-    @media (max-width: 1023px) {
-      #sidebar { position: fixed; top:0; left:0; right:0; width:100vw!important; min-width:0; height:auto!important; z-index:30; border-radius:0 0 1.5rem 1.5rem;}
-      #sidebar nav { flex-wrap:nowrap; overflow-x:auto;}
-      .main-wrap { margin-top: 172px!important;}
-      .sidebar-gradient, .sidebar-dark { border-radius: 0 0 2rem 2rem;}
+    .main-wrap { min-height: 100vh; }
+    @media (max-width: 1024px) {
+      .main-wrap { margin-top: 170px!important;}
+      #sidebar { position:fixed; top:0; left:0; right:0; width:100vw!important; height:auto!important; min-width:0; z-index:30; border-radius:0 0 1.5rem 1.5rem;}
+      #sidebar nav ul { flex-direction: row!important; overflow-x: auto; width: 100vw; }
+      #sidebar nav ul li { flex: none; min-width: 170px; }
+      #sidebar nav h2 { display: none;}
+      #sidebar .sidebar-title-text { font-size: 1.1rem; }
     }
     @media (max-width: 768px) {
-      .main-wrap { margin-top: 184px!important;}
-      .sidebar-gradient { border-radius: 0 0 1.5rem 1.5rem!important;}
+      .main-wrap { margin-top: 208px!important;}
+      #sidebar { border-radius: 0 0 1.5rem 1.5rem!important; }
+      #sidebar .sidebar-title-text { font-size: 1rem; }
+      .card-glass { padding: 1rem!important; }
     }
     @media (max-width: 500px) {
-      .main-wrap { margin-top: 225px!important;}
-      #sidebar h1, .sidebar-title-text { font-size: 1rem!important;}
-      #sidebar nav ul li a { font-size: .92rem!important;}
+      .main-wrap { margin-top: 236px!important;}
+      #sidebar { border-radius:0 0 1.1rem 1.1rem!important;}
+      #sidebar nav ul li { min-width: 140px;}
+      .card-glass { border-radius: 1rem;}
+      .card-glass h2, .card-glass h3 { font-size: 1.07rem!important;}
     }
     .dark body { background: linear-gradient(120deg, #181f2e 0%, #23304d 100%)!important;}
     .dark .card-glass { background: #23304d!important; color:#f3f6fd;}
@@ -74,13 +68,13 @@
 <!-- Responsive sticky header/sidebar -->
 <div id="sidebar" class="sidebar-gradient flex flex-col md:w-72 fixed md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 top-0 left-0 md:left-auto w-full md:rounded-r-3xl justify-between scrollbar-thin" style="overflow-y:auto; max-height:100vh;">
   <div>
-    <div class="flex items-center gap-2 mb-5 p-5 pt-7 relative">
-      <span class="text-2xl font-extrabold text-white tracking-wide flex items-center gap-2 sidebar-title-text">
-        <span style="font-size:2rem;line-height:1;" aria-label="BUMN">🏢</span>
+    <div class="flex items-center gap-2 mb-3 p-4 pt-7 relative">
+      <span class="text-xl font-extrabold text-white tracking-wide flex items-center gap-2 sidebar-title-text">
+        <span style="font-size:1.7rem;line-height:1;" aria-label="BUMN">🏢</span>
         Holding BUMN
       </span>
       <button id="toggle-dark" aria-label="Toggle dark/light mode"
-        class="ml-auto rounded-full p-2 transition hover:bg-white/30 hover:backdrop-blur absolute right-4 md:static"
+        class="ml-auto rounded-full p-2 transition hover:bg-white/30 hover:backdrop-blur absolute right-3 md:static"
         title="Toggle dark/light mode" style="top:16px;">
         <svg id="icon-dark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <circle cx="12" cy="12" r="5" stroke="#ffd600" stroke-width="2" fill="#ffd600"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M17.66 17.66l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42" stroke="#ffd600" stroke-width="2"/>
@@ -90,19 +84,18 @@
         </svg>
       </button>
     </div>
-    <div class="px-4 mb-2 flex gap-2 w-full">
+    <div class="px-4 mb-2 flex gap-2 w-full sticky top-10 z-30 bg-transparent">
       <input id="searchbar" type="text" class="searchbar w-full px-3 py-2 rounded-lg border border-blue-100 text-blue-900 placeholder-blue-400 focus:ring-2 focus:ring-blue-300 transition"
         placeholder="Cari Klaster, Holding, atau Anak Perusahaan...">
       <button id="clear-search" class="ml-1 text-blue-500 hover:bg-blue-100 rounded-full p-2" title="Clear search" style="display:none">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l8 8M6 14L14 6"/></svg>
       </button>
     </div>
-    <nav id="cluster-nav" class="mb-8 px-2 pb-2">
-      <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-3">Klaster Usaha</h2>
+    <nav id="cluster-nav" class="mb-2 px-2 pb-2">
       <ul class="space-y-1 flex md:flex-col flex-row overflow-x-auto md:overflow-visible w-full"></ul>
     </nav>
   </div>
-  <footer class="p-3 text-xs text-blue-100 text-center opacity-80 select-none w-full">
+  <footer class="p-2 text-xs text-blue-100 text-center opacity-80 select-none w-full mt-3">
     © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
     <div class="flex gap-2 justify-center mt-2">
       <button onclick="shareApp()" class="rounded-lg px-2 py-1 text-xs bg-blue-200/80 hover:bg-blue-400/90 text-blue-700 font-semibold shadow transition">Share</button>
@@ -112,7 +105,7 @@
 </div>
 
 <!-- Main content -->
-<div class="main-wrap flex-1 md:ml-72 p-4 sm:p-8 transition-all duration-300 min-h-screen flex items-center justify-center bg-none">
+<div class="main-wrap flex-1 md:ml-72 p-2 sm:p-5 transition-all duration-300 min-h-screen flex items-center justify-center bg-none">
   <div id="main-content" class="w-full"></div>
 </div>
 
