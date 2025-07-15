@@ -4,38 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eksplorator Struktur Holding BUMN</title>
+  <!-- Favicon SVG inline -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%232563eb'/><rect x='24' y='16' width='52' height='22' rx='7' fill='%23fff'/><rect x='16' y='40' width='68' height='20' rx='6' fill='%2360a5fa'/><rect x='28' y='64' width='44' height='20' rx='6' fill='%23fff'/></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#2563eb">
   <style>
     html, body { height: 100%; font-family: 'Inter', sans-serif; }
-    body { background: linear-gradient(135deg, #dbeafe 0%, #f0fdfa 100%)!important; }
+    body { background: linear-gradient(135deg, #dbeafe 0%, #f0fdfa 100%)!important; transition:background 0.3s; }
+    .dark body { background: linear-gradient(135deg,#1e293b 0%, #334155 100%)!important; color-scheme: dark; }
     #sidebar {
-      background: rgba(30, 58, 138, 0.85);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 6px 32px 0 #1e3a8a22;
+      background: rgba(30,58,138,0.95);
+      backdrop-filter: blur(14px);
       border-right: 2px solid #3b82f6;
-      transition: background 0.2s;
+      transition: left 0.3s cubic-bezier(.16,1,.3,1), background 0.3s;
+      scrollbar-width: thin; scrollbar-color: #60a5fa66 #1e3a8a22;
     }
-    #sidebar {
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #60a5fa66 #1e3a8a33;
-    }
-    #sidebar::-webkit-scrollbar { width: 14px; }
+    .dark #sidebar { background: rgba(30,41,59,0.98); border-right-color: #64748b; }
+    #sidebar::-webkit-scrollbar { width: 12px; }
     #sidebar::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #60a5fa99 30%, #1e3a8a66 100%);
-      border-radius: 12px;
-      border: 3px solid #ffffff22;
-      min-height: 80px;
-      transition: background 0.2s;
+      background: linear-gradient(135deg, #60a5fa88 30%, #1e3a8a88 100%);
+      border-radius: 14px; border: 3px solid #ffffff33; min-height: 80px;
     }
     #sidebar::-webkit-scrollbar-thumb:hover {
       background: linear-gradient(135deg, #2563ebcc 10%, #60a5faee 100%);
       border: 3px solid #e0e7ef77;
     }
     #sidebar::-webkit-scrollbar-track { background: transparent; }
-    .card-glass { background:rgba(255,255,255,0.72); backdrop-filter: blur(12px);}
+    .card-glass { background:rgba(255,255,255,0.82); backdrop-filter: blur(10px); }
+    .dark .card-glass { background:rgba(30,41,59,0.89); color:#e0e7ef; }
     .sidebar-item-active { background: #2563ebcc !important; color: #fff !important; font-weight: 700; }
     .sidebar-item { transition: background 0.15s, color 0.15s; }
     .sidebar-item:hover { background: #dbeafe44 !important; color: #fff; }
@@ -44,53 +42,119 @@
     ::-webkit-scrollbar { width:8px;}
     ::-webkit-scrollbar-thumb { background:#dbeafe; border-radius:16px;}
     ::-webkit-scrollbar-thumb:hover { background:#60a5fa;}
-    ::selection { background: #bfdbfe; color: #1e293b;}
-    @media (min-width: 768px) { #sidebar { min-height: 100vh; } }
+    .dark ::-webkit-scrollbar-thumb { background:#334155; }
+    .dark ::-webkit-scrollbar-thumb:hover { background:#64748b;}
     .search-input::placeholder { color: #bfdbfe; opacity:1;}
+    .dark .search-input { background:#1e293b44; color:#fff; }
+    .dark .search-input::placeholder { color:#64748b;}
     .subsidiary-list { display: none; }
     .accordion-open { display: block !important; }
     .rotate-180 { transform: rotate(180deg);}
+    .hamburger { cursor:pointer; display:inline-block; transition:all 0.15s }
+    .hamburger-bar { width:28px; height:4px; margin:5px 0; border-radius:2px; background:#2563eb; transition: all .18s }
+    .dark .hamburger-bar { background:#60a5fa; }
+    @media (max-width: 767px) {
+      #sidebar {
+        position: fixed;
+        top: 0; left: -100vw; bottom:0; z-index:40;
+        width: 84vw; max-width: 340px; height: 100vh;
+      }
+      #sidebar.show { left: 0; box-shadow: 6px 0 32px 0 #1e3a8a44; }
+      #sidebar .closebtn { display: flex; align-items: center; gap: 5px; margin-bottom: 1.5rem; margin-left: 8px; color: #fff; cursor: pointer; font-weight: 600; font-size: 1.15rem;}
+      main { padding-left: 0 !important; }
+      .main-content-wrap { min-height: 100vh; width: 100vw; padding: 0 !important;}
+    }
+    @media (min-width: 768px) {
+      #sidebar { position:fixed; top:0; left:0; width:18rem; max-width:360px; height:100vh; z-index:30; }
+      #sidebar .closebtn { display: none; }
+      .main-content-wrap { margin-left:18rem;}
+    }
+    .sidebar-blur { transition: background 0.25s; }
+    .sidebar-blur.active { background:rgba(30,58,138,0.99);}
+    .fadebg {
+      background: rgba(30,58,138,0.24); position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:30; display:none;
+      animation: fadebgIn 0.19s;
+    }
+    .fadebg.show { display:block; }
+    @keyframes fadebgIn { from{opacity:0;} to{opacity:1;} }
+    /* Dark mode toggle button */
+    .mode-toggle { cursor:pointer; transition: all 0.18s; }
+    .mode-toggle:hover { opacity:.85; scale:1.08; }
+    .share-btn { cursor:pointer; border:none; outline:none; background: #2563eb; color: #fff; font-weight:600; border-radius: 8px; padding: 7px 20px; transition:.16s;}
+    .share-btn:hover { background: #60a5fa; color: #1e293b;}
+    .dark .share-btn { background: #1e293b; color:#fff; }
+    .dark .share-btn:hover { background:#2563eb; color:#fff;}
+    .share-copied { color: #16a34a; font-size:.9rem; font-weight:500; margin-left:8px;}
   </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 transition-colors duration-300">
 
-<div class="flex flex-col md:flex-row min-h-screen">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-full md:w-72 md:fixed md:h-full flex-shrink-0 z-20 flex flex-col justify-between pt-0">
-    <div>
-      <div class="flex items-center gap-3 mb-4 p-6 pt-7 select-none">
-        <div class="bg-white/25 p-3 rounded-xl shadow-lg flex items-center">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="7" width="18" height="12" rx="3" fill="#2563eb"/>
-            <rect x="8" y="3" width="8" height="5" rx="2" fill="#60a5fa"/>
-            <rect x="3" y="7" width="18" height="3" fill="#93c5fd"/>
-            <rect x="11" y="11" width="2" height="2" rx="1" fill="#fff"/>
-          </svg>
-        </div>
-        <h1 class="text-2xl font-extrabold text-white tracking-wide drop-shadow">Holding BUMN</h1>
-      </div>
-      <!-- Search bar -->
-      <div class="px-6 pb-2">
-        <div class="relative">
-          <input type="text" id="search" class="search-input w-full bg-white/20 text-white placeholder-blue-100 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/40 transition"
-            placeholder="Cari Klaster, Holding, atau Anak Perusahaan..." autocomplete="off">
-          <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-100 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-        </div>
-      </div>
-      <nav id="cluster-nav" class="mb-6 px-3">
-        <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-4 pl-1">Klaster Usaha</h2>
-        <ul class="space-y-1 pb-6"></ul>
-      </nav>
+<div id="fadebg" class="fadebg"></div>
+<!-- Header for Mobile -->
+<header class="md:hidden flex items-center justify-between bg-blue-800/80 px-4 py-3 shadow-sm fixed w-full z-30" style="backdrop-filter:blur(6px)">
+  <div class="flex items-center gap-3 select-none">
+    <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+      <rect width="100" height="100" rx="24" fill="#2563eb"/>
+      <rect x="24" y="16" width="52" height="22" rx="7" fill="#fff"/>
+      <rect x="16" y="40" width="68" height="20" rx="6" fill="#60a5fa"/>
+      <rect x="28" y="64" width="44" height="20" rx="6" fill="#fff"/>
+    </svg>
+    <span class="text-lg font-extrabold text-white drop-shadow tracking-wide">Holding BUMN</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button id="toggleModeBtn" class="mode-toggle" aria-label="Toggle dark mode">
+      <svg class="w-7 h-7" id="iconMode" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <circle cx="12" cy="12" r="6" fill="#fde68a"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07l-1.42 1.42M7.05 7.05L5.64 5.64m12.02 12.02l-1.42-1.42M7.05 16.95l-1.41 1.41" stroke="#fbbf24" stroke-width="2"/>
+      </svg>
+    </button>
+    <div id="openSidebar" class="hamburger" aria-label="Menu Sidebar" tabindex="0">
+      <div class="hamburger-bar"></div>
+      <div class="hamburger-bar"></div>
+      <div class="hamburger-bar"></div>
     </div>
-    <footer class="p-3 pb-7 text-xs text-blue-100 text-center opacity-80 select-none">© 2025 Eksplorator BUMN.<br>fmbojo@gmail.com</footer>
-  </aside>
-  <!-- Main Content -->
-  <main class="flex-1 md:ml-72 p-4 sm:p-10 min-h-screen flex items-center justify-center" style="background: none;">
-    <div id="main-content" class="w-full"></div>
-  </main>
-</div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="sidebar-blur flex flex-col justify-between pt-0">
+  <div>
+    <div class="closebtn md:hidden mb-0 mt-6" id="closeSidebar" tabindex="0">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M6 6L18 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      Tutup
+    </div>
+    <div class="flex items-center gap-3 mb-4 p-6 pt-7 select-none">
+      <div class="bg-white/25 p-3 rounded-xl shadow-lg flex items-center">
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+          <rect width="100" height="100" rx="24" fill="#2563eb"/>
+          <rect x="24" y="16" width="52" height="22" rx="7" fill="#fff"/>
+          <rect x="16" y="40" width="68" height="20" rx="6" fill="#60a5fa"/>
+          <rect x="28" y="64" width="44" height="20" rx="6" fill="#fff"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-extrabold text-white tracking-wide drop-shadow">Holding BUMN</h1>
+    </div>
+    <!-- Search bar -->
+    <div class="px-6 pb-2">
+      <div class="relative">
+        <input type="text" id="search" class="search-input w-full bg-white/20 text-white placeholder-blue-100 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/40 transition"
+          placeholder="Pencarian" autocomplete="off">
+        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-100 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+      </div>
+    </div>
+    <nav id="cluster-nav" class="mb-6 px-3">
+      <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-4 pl-1">Klaster Usaha</h2>
+      <ul class="space-y-1 pb-6"></ul>
+    </nav>
+  </div>
+  <footer class="p-3 pb-7 text-xs text-blue-100 text-center opacity-80 select-none">© 2025 Eksplorator BUMN.<br>fmbojo@gmail.com</footer>
+</aside>
+
+<main class="main-content-wrap flex-1 p-4 sm:p-10 flex items-center justify-center min-h-screen" style="background: none;">
+  <div id="main-content" class="w-full"></div>
+</main>
 
 <script>
+// ===================== DATA =========================
 const bumnData = { "clusters": [
     // 1. Energi, Minyak dan Gas
     {
@@ -520,8 +584,9 @@ const bumnData = { "clusters": [
         ]
     }
 ]};
+// ================= END DATA =========================
 
-// Helper: Search subsidiary recursive
+// Helper: recursive search
 function searchInSubsidiaries(subs, q) {
   if (!subs) return false;
   for (const sub of subs) {
@@ -542,36 +607,44 @@ const searchInput = document.getElementById('search');
 let activeClusterLink = null;
 let chartInstance = null;
 
-// Helper: Render welcome
+// Welcome
 const createWelcomeMessage = () => `
-  <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
-      <div class="flex justify-center mb-6">
-        <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/>
-            <path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+  <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto mt-12">
+    <div class="flex justify-center mb-6">
+      <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/>
+          <path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <h2 class="text-3xl font-extrabold mb-3 text-blue-900 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
-      <p class="text-lg text-slate-700 max-w-xl mx-auto mb-1">Menampilkan list struktur holding dan anak perusahaan BUMN Indonesia berdasarkan hasil scrapping data sementara.</p>
-      <div class="mt-7 text-center">
-        <span class="inline-block px-5 py-3 rounded-xl bg-gradient-to-tr from-blue-200 to-blue-400/60 text-blue-900 text-lg font-semibold tracking-wider shadow-md animate-pulse">
-          Pilih klaster usaha dari menu di samping untuk mulai eksplorasi!
-        </span>
-      </div>
+    </div>
+    <h2 class="text-3xl font-extrabold mb-3 text-blue-900 dark:text-blue-100 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
+    <p class="text-lg text-slate-700 dark:text-slate-200 max-w-xl mx-auto mb-1">Menampilkan list struktur holding dan anak perusahaan BUMN Indonesia berdasarkan hasil scrapping data sementara.</p>
+    <div class="mt-7 text-center">
+      <span class="inline-block px-5 py-3 rounded-xl bg-gradient-to-tr from-blue-200 to-blue-400/60 text-blue-900 dark:text-blue-50 text-lg font-semibold tracking-wider shadow-md animate-pulse">
+        Pilih klaster usaha dari menu di samping untuk mulai eksplorasi!
+      </span>
+    </div>
+    <div class="mt-8 flex justify-center">
+      <button class="share-btn flex items-center gap-2" onclick="sharePage()">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M15.3 9.07l-5.12-2.14c-.69-.29-1.18.04-1.18.79v6.55c0 .75.5 1.08 1.18.79l5.12-2.14c.68-.29.68-.76 0-1.05l-1.83-.77c-.68-.29-.68-.76 0-1.05l1.83-.77c.68-.29.68-.76 0-1.05z" fill="#fff"/><circle cx="11" cy="11" r="10" stroke="#fff" stroke-width="2"/></svg>
+        Bagikan/Share
+      </button>
+      <span id="share-copied" class="share-copied" style="display:none;">Copied!</span>
+    </div>
   </div>
 `;
 
+// Buat subsidiary HTML rekursif
 const createSubsidiaryHTML = (subsidiaries) => {
   if (!subsidiaries || subsidiaries.length === 0) return '';
-  let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
+  let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200 dark:border-blue-900">';
   subsidiaries.forEach(sub => {
     let subName = typeof sub === 'string' ? sub : sub.name;
     let hasSubSubs = typeof sub === 'object' && sub.sub_subsidiaries && sub.sub_subsidiaries.length > 0;
     html += `
-      <li class="text-slate-700 relative">
-        <span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200"></span>
+      <li class="text-slate-700 dark:text-slate-100 relative">
+        <span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200 dark:bg-blue-800"></span>
         <div class="flex items-start gap-2">
           <span class="text-blue-600 mt-1">&#8227;</span>
           <div class="flex-1">
@@ -585,7 +658,7 @@ const createSubsidiaryHTML = (subsidiaries) => {
   return html;
 };
 
-// TAMPILKAN KLASTER: Accordion tertutup
+// Tampilkan klaster
 const displayCluster = (clusterName) => {
   const clusterData = bumnData.clusters.find(c => c.name === clusterName);
   if (!clusterData) {
@@ -594,17 +667,20 @@ const displayCluster = (clusterName) => {
   }
   let contentHTML = `
     <div class="group-item-enter">
-      <button class="homebtn bg-blue-100/60 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
-        onclick="window.showHome()"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg> Beranda</button>
-      <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
-      <p class="text-xl text-slate-600 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
+      <button class="homebtn bg-blue-100/60 dark:bg-blue-800/40 hover:bg-blue-200 text-blue-700 dark:text-blue-100 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
+        onclick="window.showHome()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg>
+        Beranda
+      </button>
+      <h2 class="text-4xl font-extrabold text-blue-800 dark:text-blue-200 mb-3">${clusterData.name}</h2>
+      <p class="text-xl text-slate-600 dark:text-slate-200 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400 dark:text-blue-300">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
     </div>
   `;
   if (clusterData.holdings && clusterData.holdings.length > 0) {
     contentHTML += `
       <div class="mb-12 group-item-enter" style="animation-delay: 0.1s;">
-        <div class="card-glass p-8 rounded-2xl shadow-xl border border-blue-200">
-          <h3 class="text-2xl font-bold text-blue-700 mb-6">Distribusi Anak Perusahaan</h3>
+        <div class="card-glass p-8 rounded-2xl shadow-xl border border-blue-200 dark:border-blue-900">
+          <h3 class="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-6">Distribusi Anak Perusahaan</h3>
           <div class="chart-container">
             <canvas id="clusterChart"></canvas>
           </div>
@@ -616,24 +692,24 @@ const displayCluster = (clusterName) => {
   clusterData.holdings.forEach((holding, index) => {
     const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
     contentHTML += `
-      <div class="card-glass rounded-2xl shadow-lg border border-blue-100 overflow-hidden content-card group-item-enter hover:scale-[1.025] hover:shadow-2xl transition-all duration-150" style="animation-delay: ${0.2 + index * 0.1}s;">
-        <button class="w-full text-left p-7 hover:bg-blue-50/40 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
+      <div class="card-glass rounded-2xl shadow-lg border border-blue-100 dark:border-blue-900 overflow-hidden content-card group-item-enter hover:scale-[1.025] hover:shadow-2xl transition-all duration-150" style="animation-delay: ${0.2 + index * 0.1}s;">
+        <button class="w-full text-left p-7 hover:bg-blue-50/40 dark:hover:bg-blue-900/30 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
           <div>
-            <h3 class="text-2xl font-semibold text-blue-700 drop-shadow">${holding.name}</h3>
-            <p class="text-slate-600 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
+            <h3 class="text-2xl font-semibold text-blue-700 dark:text-blue-200 drop-shadow">${holding.name}</h3>
+            <p class="text-slate-600 dark:text-slate-300 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
           </div>
-          <svg class="w-7 h-7 text-blue-300 group-hover:text-blue-500 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          <svg class="w-7 h-7 text-blue-300 dark:text-blue-600 group-hover:text-blue-500 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
-        <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-blue-50 bg-blue-50/20 rounded-b-2xl">
+        <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-blue-50 bg-blue-50/20 dark:bg-blue-900/20 rounded-b-2xl">
           <div class="pt-5">
-            ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
+            ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500 dark:text-slate-400">Informasi tidak tersedia.</p>'}
           </div>
         </div>
       </div>`;
   });
   contentHTML += '</div>';
   mainContent.innerHTML = contentHTML;
-  // Accordion semua dalam kondisi tertutup (display: none).
+
   // Chart
   if (chartInstance) chartInstance.destroy();
   const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
@@ -674,9 +750,14 @@ const displayCluster = (clusterName) => {
       }
     });
   }
+  // Accordion: default all closed!
+  clusterData.holdings.forEach((_, idx) => {
+    const el = document.getElementById(`subs-for-${idx}`);
+    if (el) el.style.display = 'none';
+  });
 };
 
-// Accordion toggle (default collapsed)
+// Accordion toggle
 mainContent.addEventListener('click', (e) => {
   const button = e.target.closest('button[data-target]');
   if (button) {
@@ -684,19 +765,14 @@ mainContent.addEventListener('click', (e) => {
     const targetElement = document.getElementById(targetId);
     const icon = button.querySelector('svg');
     if (targetElement) {
-      const isVisible = targetElement.classList.contains('accordion-open');
-      if (isVisible) {
-        targetElement.classList.remove('accordion-open');
-        icon.classList.remove('rotate-180');
-      } else {
-        targetElement.classList.add('accordion-open');
-        icon.classList.add('rotate-180');
-      }
+      const isVisible = targetElement.style.display === 'block';
+      targetElement.style.display = isVisible ? 'none' : 'block';
+      icon.classList.toggle('rotate-180', !isVisible);
     }
   }
 });
 
-// Render sidebar list (with search)
+// Sidebar filter/search
 function renderSidebarList(clusters) {
   clusterNav.innerHTML = '';
   clusters.forEach(cluster => {
@@ -711,6 +787,8 @@ function renderSidebarList(clusters) {
       if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
       a.classList.add('sidebar-item-active');
       activeClusterLink = a;
+      // Close sidebar on mobile
+      if (window.innerWidth < 768) toggleSidebar(false);
       displayCluster(cluster.name);
     });
     li.appendChild(a);
@@ -733,7 +811,7 @@ window.showHome = function() {
   renderSidebarList(bumnData.clusters);
 };
 
-// === SEARCH FILTERING (Cluster, Holding, Subsidiary, Sub-sub) ===
+// SEARCH filter (cluster, holding, anak, subsub)
 searchInput.addEventListener('input', function() {
   const val = searchInput.value.trim().toLowerCase();
   let filtered = [];
@@ -741,7 +819,6 @@ searchInput.addEventListener('input', function() {
     filtered = bumnData.clusters;
   } else {
     bumnData.clusters.forEach(cluster => {
-      // Cluster cocok
       if (cluster.name.toLowerCase().includes(val)) {
         filtered.push(cluster);
       } else {
@@ -764,6 +841,79 @@ searchInput.addEventListener('input', function() {
   activeClusterLink = null;
   mainContent.innerHTML = createWelcomeMessage();
 });
+
+// SIDEBAR OFFCANVAS MOBILE
+const sidebar = document.getElementById('sidebar');
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+const fadebg = document.getElementById('fadebg');
+function toggleSidebar(show) {
+  if (show) {
+    sidebar.classList.add('show');
+    fadebg.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  } else {
+    sidebar.classList.remove('show');
+    fadebg.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+if(openSidebarBtn) openSidebarBtn.onclick = () => toggleSidebar(true);
+if(closeSidebarBtn) closeSidebarBtn.onclick = () => toggleSidebar(false);
+if(fadebg) fadebg.onclick = () => toggleSidebar(false);
+
+window.addEventListener('resize', ()=>{
+  if(window.innerWidth>=768) toggleSidebar(false);
+});
+
+// SHARE FEATURE
+window.sharePage = function() {
+  const shareText = "Lihat Eksplorator Struktur Holding BUMN 🇮🇩";
+  const shareUrl = location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      text: shareText,
+      url: shareUrl
+    }).catch(()=>{});
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(shareUrl);
+    const copied = document.getElementById('share-copied');
+    copied.style.display = 'inline-block';
+    setTimeout(()=>{ copied.style.display = 'none'; }, 1800);
+  }
+}
+
+// DARK/LIGHT MODE
+const htmlRoot = document.documentElement;
+const modeBtn = document.getElementById('toggleModeBtn');
+function setDarkMode(dark) {
+  if (dark) {
+    htmlRoot.classList.add('dark');
+    localStorage.setItem('bumn_theme','dark');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#1e293b');
+    document.getElementById('iconMode').innerHTML = `<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" fill="#334155"/>`;
+  } else {
+    htmlRoot.classList.remove('dark');
+    localStorage.setItem('bumn_theme','light');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#2563eb');
+    document.getElementById('iconMode').innerHTML = `<circle cx="12" cy="12" r="6" fill="#fde68a"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07l-1.42 1.42M7.05 7.05L5.64 5.64m12.02 12.02l-1.42-1.42M7.05 16.95l-1.41 1.41" stroke="#fbbf24" stroke-width="2"/>`;
+  }
+}
+function toggleMode() {
+  setDarkMode(!htmlRoot.classList.contains('dark'));
+}
+if(modeBtn) modeBtn.onclick = toggleMode;
+// Auto mode on load
+(function(){
+  let userPref = localStorage.getItem('bumn_theme');
+  if(!userPref) {
+    userPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light';
+  }
+  setDarkMode(userPref==='dark');
+})();
+
 </script>
 </body>
 </html>
