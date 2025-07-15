@@ -1,65 +1,90 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksplorator Struktur Holding BUMN</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='36' height='36' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='18' cy='18' rx='18' ry='18' fill='%233b82f6'/%3E%3Cpath d='M18 7v14.5M18 25.7h.01' stroke='%23fff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        html, body { height: 100%; font-family: 'Inter', sans-serif;}
-        body { background: linear-gradient(135deg,#dbeafe 0%, #f0fdfa 100%)!important;}
-        .chart-container { position: relative; width: 100%; max-width: 800px; margin: auto; height: 350px; max-height: 400px; }
-        .subsidiary-list { display: none; }
-        .rotate-180 { transform: rotate(180deg);}
-        .sidebar-gradient { background: linear-gradient(160deg,#1e3a8a 75%,#60a5fa 100%);}
-        .sidebar-item-active { background: #2563eb; color: #fff !important; font-weight: 700; box-shadow: 0 6px 16px -8px #3b82f6; }
-        .card-glass { background:rgba(255,255,255,0.74); backdrop-filter: blur(8px);}
-        .homebtn { transition: .15s;}
-        .homebtn:hover { background: #dbeafe; color: #1d4ed8;}
-        .group-item-enter { animation: fadeIn 0.5s cubic-bezier(.32,2,.55,.27) forwards; opacity:0; transform:translateY(12px);}
-        @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
-        /* Custom scrollbar for sidebar only */
-        #sidebar nav::-webkit-scrollbar { width:10px; }
-        #sidebar nav::-webkit-scrollbar-thumb {
-            background: linear-gradient(120deg, #60a5fa 10%, #2563eb 90%);
-            border-radius: 10px;
-        }
-        #sidebar nav::-webkit-scrollbar-track { background:transparent;}
-        #sidebar nav { scrollbar-color: #60a5fa #f1f5f9; scrollbar-width: thin;}
-        ::selection { background: #bfdbfe; color: #1e293b;}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eksplorator Struktur Holding BUMN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+    body { background: linear-gradient(135deg, #dbeafe 0%, #f0fdfa 100%)!important; }
+    #sidebar {
+      background: rgba(30, 58, 138, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 32px 0 #1e3a8a22;
+      border-right: 2px solid #3b82f6;
+      transition: background 0.2s;
+    }
+    #sidebar {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #60a5fa66 #1e3a8a33;
+    }
+    #sidebar::-webkit-scrollbar { width: 14px; }
+    #sidebar::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #60a5fa99 30%, #1e3a8a66 100%);
+      border-radius: 12px;
+      border: 3px solid #ffffff22;
+      min-height: 80px;
+      transition: background 0.2s;
+    }
+    #sidebar::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #2563ebcc 10%, #60a5faee 100%);
+      border: 3px solid #e0e7ef77;
+    }
+    #sidebar::-webkit-scrollbar-track { background: transparent; }
+    .card-glass { background:rgba(255,255,255,0.72); backdrop-filter: blur(12px);}
+    .sidebar-item-active { background: #2563ebcc !important; color: #fff !important; font-weight: 700; }
+    .sidebar-item { transition: background 0.15s, color 0.15s; }
+    .sidebar-item:hover { background: #dbeafe44 !important; color: #fff; }
+    .group-item-enter { animation: fadeIn 0.5s cubic-bezier(.32,2,.55,.27) forwards; opacity:0; transform:translateY(12px);}
+    @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+    ::-webkit-scrollbar { width:8px;}
+    ::-webkit-scrollbar-thumb { background:#dbeafe; border-radius:16px;}
+    ::-webkit-scrollbar-thumb:hover { background:#60a5fa;}
+    ::selection { background: #bfdbfe; color: #1e293b;}
+    @media (min-width: 768px) { #sidebar { min-height: 100vh; } }
+    .search-input::placeholder { color: #bfdbfe; opacity:1;}
+  </style>
 </head>
 <body class="text-slate-800">
 
 <div class="flex flex-col md:flex-row min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar-gradient w-full md:w-72 md:fixed md:h-full flex-shrink-0 shadow-2xl z-20 flex flex-col justify-between">
-        <div class="flex flex-col flex-1 min-h-0">
-            <div class="flex items-center gap-3 mb-8 p-6 pt-7 flex-shrink-0">
-                <div class="bg-white/20 p-3 rounded-xl shadow-lg">
-                    <!-- Logo SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/><path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-                <h1 class="text-2xl font-extrabold text-white tracking-wide">Holding BUMN</h1>
-            </div>
-            <!-- Scrollable Nav Area -->
-            <nav id="cluster-nav" class="flex-1 overflow-y-auto px-4 pb-4" style="scrollbar-gutter: stable;">
-                <h2 class="text-sm font-bold text-blue-100 uppercase tracking-widest mb-4">Klaster Usaha</h2>
-                <ul class="space-y-1"></ul>
-            </nav>
+  <!-- Sidebar -->
+  <aside id="sidebar" class="w-full md:w-72 md:fixed md:h-full flex-shrink-0 z-20 flex flex-col justify-between pt-0">
+    <div>
+      <div class="flex items-center gap-3 mb-4 p-6 pt-7 select-none">
+        <div class="bg-white/25 p-3 rounded-xl shadow-lg flex items-center">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="7" width="18" height="12" rx="3" fill="#2563eb"/>
+            <rect x="8" y="3" width="8" height="5" rx="2" fill="#60a5fa"/>
+            <rect x="3" y="7" width="18" height="3" fill="#93c5fd"/>
+            <rect x="11" y="11" width="2" height="2" rx="1" fill="#fff"/>
+          </svg>
         </div>
-        <footer class="p-4 pb-6 text-xs text-blue-100 text-center opacity-80 select-none flex-shrink-0">
-            © 2025 Eksplorator BUMN.<br>fmbojo@gmail.com
-        </footer>
-    </aside>
-
-    <!-- Main content -->
-    <main class="flex-1 md:ml-72 p-4 sm:p-10 transition-all duration-300 min-h-screen flex items-center justify-center" style="background: none;">
-        <div id="main-content" class="w-full"></div>
-    </main>
+        <h1 class="text-2xl font-extrabold text-white tracking-wide drop-shadow">Holding BUMN</h1>
+      </div>
+      <!-- Search bar -->
+      <div class="px-6 pb-2">
+        <div class="relative">
+          <input type="text" id="search" class="search-input w-full bg-white/20 text-white placeholder-blue-100 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/40 transition"
+            placeholder="Cari Klaster/Holding..." autocomplete="off">
+          <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-100 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+        </div>
+      </div>
+      <nav id="cluster-nav" class="mb-6 px-3">
+        <h2 class="text-xs font-bold text-blue-100 uppercase tracking-widest mb-4 pl-1">Klaster Usaha</h2>
+        <ul class="space-y-1 pb-6"></ul>
+      </nav>
+    </div>
+    <footer class="p-3 pb-7 text-xs text-blue-100 text-center opacity-80 select-none">© 2025 Eksplorator BUMN.<br>fmbojo@gmail.com</footer>
+  </aside>
+  <!-- Main Content -->
+  <main class="flex-1 md:ml-72 p-4 sm:p-10 min-h-screen flex items-center justify-center" style="background: none;">
+    <div id="main-content" class="w-full"></div>
+  </main>
 </div>
 
 <script>
@@ -495,183 +520,224 @@ const bumnData = { "clusters": [
 
 const clusterNav = document.querySelector('#cluster-nav ul');
 const mainContent = document.getElementById('main-content');
+const searchInput = document.getElementById('search');
 let activeClusterLink = null;
 let chartInstance = null;
 
+// Helper: Render welcome
 const createWelcomeMessage = () => `
-    <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
-        <div class="flex justify-center mb-6">
-            <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/><path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
+  <div class="card-glass p-10 pt-16 rounded-3xl shadow-xl border border-blue-100 group-item-enter max-w-2xl mx-auto">
+      <div class="flex justify-center mb-6">
+        <div class="bg-blue-200 text-blue-700 p-5 rounded-full shadow-lg animate-bounce-slow">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <ellipse cx="12" cy="12" rx="12" ry="12" fill="#3b82f6"/>
+            <path d="M12 5v10.5M12 21h.01" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <h2 class="text-3xl font-extrabold mb-3 text-blue-900 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
-        <p class="text-lg text-slate-700 max-w-xl mx-auto mb-1">Menampilkan list struktur holding dan anak perusahaan BUMN Indonesia berdasarkan hasil scrapping data sementara.</p>
-        <div class="mt-7 text-center">
-            <span class="inline-block px-5 py-3 rounded-xl bg-gradient-to-tr from-blue-200 to-blue-400/60 text-blue-900 text-lg font-semibold tracking-wider shadow-md animate-pulse">
-                Pilih klaster usaha dari menu di samping untuk mulai eksplorasi!
-            </span>
-        </div>
-    </div>
+      </div>
+      <h2 class="text-3xl font-extrabold mb-3 text-blue-900 drop-shadow">Selamat Datang di Eksplorator BUMN</h2>
+      <p class="text-lg text-slate-700 max-w-xl mx-auto mb-1">Menampilkan list struktur holding dan anak perusahaan BUMN Indonesia berdasarkan hasil scrapping data sementara.</p>
+      <div class="mt-7 text-center">
+        <span class="inline-block px-5 py-3 rounded-xl bg-gradient-to-tr from-blue-200 to-blue-400/60 text-blue-900 text-lg font-semibold tracking-wider shadow-md animate-pulse">
+          Pilih klaster usaha dari menu di samping untuk mulai eksplorasi!
+        </span>
+      </div>
+  </div>
 `;
 
 const createSubsidiaryHTML = (subsidiaries) => {
-    if (!subsidiaries || subsidiaries.length === 0) return '';
-    let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
-    subsidiaries.forEach(sub => {
-        let subName = typeof sub === 'string' ? sub : sub.name;
-        let hasSubSubs = typeof sub === 'object' && sub.sub_subsidiaries && sub.sub_subsidiaries.length > 0;
-        html += `
-            <li class="text-slate-700 relative">
-                <span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200"></span>
-                <div class="flex items-start gap-2">
-                    <span class="text-blue-600 mt-1">&#8227;</span>
-                    <div class="flex-1">
-                        <span>${subName}</span>
-                        ${hasSubSubs ? createSubsidiaryHTML(sub.sub_subsidiaries) : ''}
-                    </div>
-                </div>
-            </li>`;
-    });
-    html += '</ul>';
-    return html;
+  if (!subsidiaries || subsidiaries.length === 0) return '';
+  let html = '<ul class="pl-6 mt-3 space-y-2 border-l-2 border-blue-200">';
+  subsidiaries.forEach(sub => {
+    let subName = typeof sub === 'string' ? sub : sub.name;
+    let hasSubSubs = typeof sub === 'object' && sub.sub_subsidiaries && sub.sub_subsidiaries.length > 0;
+    html += `
+      <li class="text-slate-700 relative">
+        <span class="absolute -left-[30px] top-2 h-0.5 w-6 bg-blue-200"></span>
+        <div class="flex items-start gap-2">
+          <span class="text-blue-600 mt-1">&#8227;</span>
+          <div class="flex-1">
+            <span>${subName}</span>
+            ${hasSubSubs ? createSubsidiaryHTML(sub.sub_subsidiaries) : ''}
+          </div>
+        </div>
+      </li>`;
+  });
+  html += '</ul>';
+  return html;
 };
 
 const displayCluster = (clusterName) => {
-    const clusterData = bumnData.clusters.find(c => c.name === clusterName);
-    if (!clusterData) {
-        mainContent.innerHTML = createWelcomeMessage();
-        return;
-    }
-
-    let contentHTML = `
-        <div class="group-item-enter">
-            <button class="homebtn bg-blue-100/60 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
-                onclick="window.showHome()"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg> Beranda</button>
-            <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
-            <p class="text-xl text-slate-600 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
-        </div>
-    `;
-    if (clusterData.holdings && clusterData.holdings.length > 0) {
-         contentHTML += `
-            <div class="mb-12 group-item-enter" style="animation-delay: 0.1s;">
-               <div class="card-glass p-8 rounded-2xl shadow-xl border border-blue-200">
-                    <h3 class="text-2xl font-bold text-blue-700 mb-6">Distribusi Anak Perusahaan</h3>
-                    <div class="chart-container">
-                        <canvas id="clusterChart"></canvas>
-                    </div>
-               </div>
-            </div>
-         `;
-    }
-
-    contentHTML += '<div class="space-y-8">';
-    clusterData.holdings.forEach((holding, index) => {
-        const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
-        contentHTML += `
-            <div class="card-glass rounded-2xl shadow-lg border border-blue-100 overflow-hidden content-card group-item-enter hover:scale-[1.025] hover:shadow-2xl transition-all duration-150" style="animation-delay: ${0.2 + index * 0.1}s;">
-                <button class="w-full text-left p-7 hover:bg-blue-50/40 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
-                    <div>
-                        <h3 class="text-2xl font-semibold text-blue-700 drop-shadow">${holding.name}</h3>
-                        <p class="text-slate-600 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
-                    </div>
-                     <svg class="w-7 h-7 text-blue-300 group-hover:text-blue-500 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-blue-50 bg-blue-50/20 rounded-b-2xl">
-                   <div class="pt-5">
-                    ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
-                   </div>
-                </div>
-            </div>`;
-    });
-    contentHTML += '</div>';
-
-    mainContent.innerHTML = contentHTML;
-    if (chartInstance) chartInstance.destroy();
-    const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
-    if (chartCtx) {
-        const labels = clusterData.holdings.map(h => h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));
-        const data = clusterData.holdings.map(h => h.subsidiaries ? h.subsidiaries.length : 0);
-        chartInstance = new Chart(chartCtx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Jumlah Anak Perusahaan',
-                    data: data,
-                    backgroundColor: 'rgba(59,130,246,0.85)',
-                    borderColor: 'rgba(59,130,246,1)',
-                    borderWidth: 1,
-                    borderRadius: 8,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#e0e7ef' } },
-                    x: { 
-                        grid: { display: false },
-                        ticks: { maxRotation: 45, minRotation: 45 }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        titleFont: { size: 16, weight: 'bold' },
-                        bodyFont: { size: 14 },
-                        padding: 14,
-                        cornerRadius: 8,
-                        displayColors: false
-                    }
-                }
-            }
-        });
-    }
-};
-
-mainContent.addEventListener('click', (e) => {
-    const button = e.target.closest('button[data-target]');
-    if (button) {
-        const targetId = button.getAttribute('data-target');
-        const targetElement = document.getElementById(targetId);
-        const icon = button.querySelector('svg');
-        if (targetElement) {
-            const isVisible = targetElement.style.display === 'block';
-            targetElement.style.display = isVisible ? 'none' : 'block';
-            icon.classList.toggle('rotate-180', !isVisible);
-        }
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    bumnData.clusters.forEach((cluster, i) => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = '#';
-        a.textContent = cluster.name;
-        a.className = 'flex items-center px-4 py-3 text-blue-50/90 rounded-xl hover:bg-blue-200/40 hover:text-blue-900 transition-colors font-medium sidebar-item';
-        a.dataset.cluster = cluster.name;
-        a.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
-            a.classList.add('sidebar-item-active');
-            activeClusterLink = a;
-            displayCluster(cluster.name);
-        });
-        li.appendChild(a);
-        clusterNav.appendChild(li);
-    });
-    showHome();
-});
-
-window.showHome = function() {
+  const clusterData = bumnData.clusters.find(c => c.name === clusterName);
+  if (!clusterData) {
     mainContent.innerHTML = createWelcomeMessage();
-    if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
-    activeClusterLink = null;
-};
-</script>
+    return;
+  }
 
+  let contentHTML = `
+    <div class="group-item-enter">
+      <button class="homebtn bg-blue-100/60 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 font-semibold shadow hover:shadow-md border border-blue-200 text-sm transition"
+        onclick="window.showHome()"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0h2a2 2 0 002-2V7a2 2 0 00-.586-1.414l-7-7a2 2 0 00-2.828 0l-7 7A2 2 0 003 7v11a2 2 0 002 2h2" /></svg> Beranda</button>
+      <h2 class="text-4xl font-extrabold text-blue-800 mb-3">${clusterData.name}</h2>
+      <p class="text-xl text-slate-600 mb-8">Pemetaan perusahaan holding di klaster ini.<br><span class="text-base text-blue-400">Klik setiap kartu untuk eksplorasi anak perusahaannya.</span></p>
+    </div>
+  `;
+  if (clusterData.holdings && clusterData.holdings.length > 0) {
+    contentHTML += `
+      <div class="mb-12 group-item-enter" style="animation-delay: 0.1s;">
+        <div class="card-glass p-8 rounded-2xl shadow-xl border border-blue-200">
+          <h3 class="text-2xl font-bold text-blue-700 mb-6">Distribusi Anak Perusahaan</h3>
+          <div class="chart-container">
+            <canvas id="clusterChart"></canvas>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  contentHTML += '<div class="space-y-8">';
+  clusterData.holdings.forEach((holding, index) => {
+    const hasSubsidiaries = holding.subsidiaries && holding.subsidiaries.length > 0;
+    contentHTML += `
+      <div class="card-glass rounded-2xl shadow-lg border border-blue-100 overflow-hidden content-card group-item-enter hover:scale-[1.025] hover:shadow-2xl transition-all duration-150" style="animation-delay: ${0.2 + index * 0.1}s;">
+        <button class="w-full text-left p-7 hover:bg-blue-50/40 focus:outline-none flex justify-between items-center transition-colors duration-200" data-target="subs-for-${index}">
+          <div>
+            <h3 class="text-2xl font-semibold text-blue-700 drop-shadow">${holding.name}</h3>
+            <p class="text-slate-600 mt-2">${hasSubsidiaries ? holding.subsidiaries.length + ' anak perusahaan terdaftar' : 'Tidak ada data anak perusahaan'}</p>
+          </div>
+          <svg class="w-7 h-7 text-blue-300 group-hover:text-blue-500 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div id="subs-for-${index}" class="subsidiary-list px-7 pb-7 border-t border-blue-50 bg-blue-50/20 rounded-b-2xl">
+          <div class="pt-5">
+            ${hasSubsidiaries ? createSubsidiaryHTML(holding.subsidiaries) : '<p class="text-slate-500">Informasi tidak tersedia.</p>'}
+          </div>
+        </div>
+      </div>`;
+  });
+  contentHTML += '</div>';
+  mainContent.innerHTML = contentHTML;
+  if (chartInstance) chartInstance.destroy();
+  const chartCtx = document.getElementById('clusterChart')?.getContext('2d');
+  if (chartCtx) {
+    const labels = clusterData.holdings.map(h => h.name.replace(/ \(Persero\)| Tbk| \(Persero\) Tbk/g, ''));
+    const data = clusterData.holdings.map(h => h.subsidiaries ? h.subsidiaries.length : 0);
+    chartInstance = new Chart(chartCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Jumlah Anak Perusahaan',
+          data: data,
+          backgroundColor: 'rgba(59,130,246,0.85)',
+          borderColor: 'rgba(59,130,246,1)',
+          borderWidth: 1,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e0e7ef' } },
+          x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            titleFont: { size: 16, weight: 'bold' },
+            bodyFont: { size: 14 },
+            padding: 14,
+            cornerRadius: 8,
+            displayColors: false
+          }
+        }
+      }
+    });
+  }
+};
+
+// Accordion panel
+mainContent.addEventListener('click', (e) => {
+  const button = e.target.closest('button[data-target]');
+  if (button) {
+    const targetId = button.getAttribute('data-target');
+    const targetElement = document.getElementById(targetId);
+    const icon = button.querySelector('svg');
+    if (targetElement) {
+      const isVisible = targetElement.style.display === 'block';
+      targetElement.style.display = isVisible ? 'none' : 'block';
+      icon.classList.toggle('rotate-180', !isVisible);
+    }
+  }
+});
+
+function renderSidebarList(filteredClusters) {
+  clusterNav.innerHTML = "";
+  filteredClusters.forEach(cluster => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = cluster.name;
+    a.className = 'sidebar-item flex items-center px-4 py-3 rounded-xl font-medium text-blue-50/90';
+    a.dataset.cluster = cluster.name;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
+      a.classList.add('sidebar-item-active');
+      activeClusterLink = a;
+      displayCluster(cluster.name);
+    });
+    li.appendChild(a);
+    clusterNav.appendChild(li);
+  });
+}
+
+// Initial render
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebarList(bumnData.clusters);
+  showHome();
+});
+
+// Home Button
+window.showHome = function() {
+  mainContent.innerHTML = createWelcomeMessage();
+  if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
+  activeClusterLink = null;
+  searchInput.value = "";
+  renderSidebarList(bumnData.clusters);
+};
+
+// === SEARCH FILTERING ===
+searchInput.addEventListener('input', function() {
+  const val = searchInput.value.trim().toLowerCase();
+  let filtered = [];
+  if (val.length === 0) {
+    filtered = bumnData.clusters;
+  } else {
+    bumnData.clusters.forEach(cluster => {
+      // Cek klaster cocok
+      if (cluster.name.toLowerCase().includes(val)) {
+        filtered.push(cluster);
+      } else {
+        // Cek holding cocok
+        const matchingHoldings = cluster.holdings.filter(h =>
+          h.name.toLowerCase().includes(val)
+        );
+        if (matchingHoldings.length) {
+          filtered.push({
+            name: cluster.name,
+            holdings: matchingHoldings
+          });
+        }
+      }
+    });
+  }
+  renderSidebarList(filtered);
+  if (activeClusterLink) activeClusterLink.classList.remove('sidebar-item-active');
+  activeClusterLink = null;
+  mainContent.innerHTML = createWelcomeMessage();
+});
+</script>
 </body>
 </html>
